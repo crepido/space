@@ -35,3 +35,6 @@ Prioritet:
     Sända GPS-koordinater i SMS, 10 sek?.
     Skicka bilder från hög höjd.
     Ta och skicka bilder nedåt för lokalisering av landningsplats.
+
+Mode 5, Landat
+    Sänd GPS-koordinater.

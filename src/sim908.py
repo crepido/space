@@ -1,7 +1,7 @@
 __author__ = 'tobias'
 
 import time
-import serial
+#import serial
 
 
 class Sim908:
