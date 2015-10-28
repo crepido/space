@@ -40,11 +40,11 @@ class Space:
             while self.running:
                 try:
                     msg = self.q_com_device_out.get_nowait()
-                    if msg == "FALLING":
+                    if msg == "Mode 3":
                         self.set_mode("Mode 3")
-                    if msg == "ONLINE":
+                    if msg == "Mode 4":
                         self.set_mode("Mode 4")
-                    if msg == "LANDED":
+                    if msg == "Mode 5":
                         self.set_mode("Mode 5")
                 except Queue.Empty:
                     None

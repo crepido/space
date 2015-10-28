@@ -140,3 +140,4 @@ class Camera(threading.Thread):
 
     def send_picture(self):
         print("send picture")
+        # Copy file to data/send
