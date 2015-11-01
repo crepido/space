@@ -29,15 +29,12 @@ namespace SpaceshipTracker.Web
             SamplePositions sampleDataInitializer,
             ILoggerFactory loggerfactory)
         {
-
-            //loggerfactory.AddConsole(minLevel: LogLevel.Verbose);
+            loggerfactory.AddConsole(minLevel: LogLevel.Verbose);
 
             app.UseDeveloperExceptionPage();
-            //app.UseDatabaseErrorPage(DatabaseErrorPageOptions.ShowAll);
 
             app.UseMvc();
-            
-            
+
             sampleDataInitializer.InitializeData();
         }
     }
