@@ -30,5 +30,10 @@ namespace SpaceshipTracker.Web.Repositories
         {
             return _ctx.Positions.Where(p=>p.Identifier.Equals(identifier)).ToList();
         }
+
+        public IEnumerable<string> GetAllShipNames()
+        {
+            return _ctx.Positions.Select(p => p.Identifier).Distinct().ToList();
+        }
     }
 }

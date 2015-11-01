@@ -8,5 +8,6 @@ namespace SpaceshipTracker.Web.Repositories
         IList<Position> GetAll();
         IEnumerable<Position> GetAllByIdentifier(string identifier);
         void Save(Position position);
+        IEnumerable<string> GetAllShipNames();
     }
 }
