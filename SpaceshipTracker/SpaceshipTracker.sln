@@ -15,6 +15,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SpaceshipTracker.Web", "src
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SpaceshipTracker.Web.Tests", "test\SpaceshipTracker.Web.Tests\SpaceshipTracker.Web.Tests.xproj", "{DD1C9318-E5FD-4A54-AB87-3E2323A207AF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{26742830-4795-48AA-82D7-F198A74CE6EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE5305BE-49ED-4D1A-83C0-D06ADC63B284} = {6EA3DA62-9C8B-4A05-8F5D-52F1CDCCCE7B}
-		{DD1C9318-E5FD-4A54-AB87-3E2323A207AF} = {6EA3DA62-9C8B-4A05-8F5D-52F1CDCCCE7B}
+		{DD1C9318-E5FD-4A54-AB87-3E2323A207AF} = {26742830-4795-48AA-82D7-F198A74CE6EB}
 	EndGlobalSection
 EndGlobal
