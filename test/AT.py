@@ -21,7 +21,7 @@ def send_command(com):
 def convert(string):
     d = int(string[:2])
     m = float(string[2:])
-    return d+m/60
+    return float(d+m/60)
 
 
 def conv(pos):
@@ -34,11 +34,21 @@ def conv(pos):
     speed = str[7]
     course = str[8]
 
-    print(convert(lon))
-    print(convert(lat))
+
+    lon_d = convert(lon)
+    lat_d = convert(lat)
+
+    print("LON:", lon_d)
+    print("LAT:", lat_d)
     print("ALT: "+alt)
     print("SPEED: "+speed)
     print("COURSE: "+course)
+
+    a = float(12.303)
+    print("hshhd %.9f" % a)
+
+    url = "http://maps.google.com/maps?z=12&t=m&q=loc:%.9f+%.9f" % (lon_d, lat_d)
+    print(url)
 
 
 # ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, bytesize=8, parity='N', stopbits=1)
