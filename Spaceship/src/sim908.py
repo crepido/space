@@ -68,6 +68,14 @@ class Sim908:
         result = self.send_command("AT+CSQ")
         return result[1]
 
+    def send_sms(self, number, text):
+        self.send_command_with_result("AT", "OK")
+        self.send_command("AT+CSCA?")
+        self.send_command("AT+CMGF=1")  # Set sms message format
+        self.send_command_with_result("AT+CMGS=\""+number+"\"", ">")  # Set sms message format
+        self.send_command(text)
+        self.send_command("1A")  # TODO Must send as HEX... This may not work yet...
+
     def send_command(self, com):
         self.ser.write(com+"\r\n")
         time.sleep(2)
