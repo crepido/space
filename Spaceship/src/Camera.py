@@ -13,7 +13,7 @@ class Camera(threading.Thread):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(7, GPIO.OUT)
         self.pwm = GPIO.PWM(7, 50)
-        self.pwn.start(7.5)
+        self.pwm.start(7.5)
         self.camera_position = "horizontal"
 
         self.mode = 1
