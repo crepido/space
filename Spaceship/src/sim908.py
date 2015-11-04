@@ -79,13 +79,13 @@ class Sim908:
         self.send_command("AT+CMGF=1")  # Set sms message format
         self.send_command_with_result("AT+CMGS=\""+number+"\"", ">")  # Set sms message format
         self.send_command(text)
-        self.send_command("1A")  # TODO Must send as HEX... This may not work yet...
+        self.send_command("\x1A")  # TODO Must send as HEX... This may not work yet...
 
     def read_one_sms(self):
         # Read
-        self.send_command("AT+CMGR=1")
+        print(self.send_command("AT+CMGR=1"))
         # Delete
-        self.send_command("AT+CMGD=1")
+        print(self.send_command("AT+CMGD=1"))
 
     def send_command(self, com):
         self.ser.write(com+"\r\n")
