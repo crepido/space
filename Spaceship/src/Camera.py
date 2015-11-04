@@ -4,6 +4,7 @@ import RPi.GPIO as GPIO
 import time
 import threading
 import Queue
+import os
 
 
 class Camera(threading.Thread):
@@ -130,7 +131,8 @@ class Camera(threading.Thread):
 
     def take_picture(self):
         print("take_picture "+self.camera_position)
-        time.sleep(0.5)
+        os.system("raspistill -o -h 300 -w 533 low-"+str(time.time())+".jpg")
+        os.system("raspistill -o high-"+str(time.time())+".jpg")
 
     def movie10s(self):
         print("10 sek movie "+self.camera_position)

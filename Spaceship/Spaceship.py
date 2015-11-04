@@ -1,7 +1,7 @@
 __author__ = 'tobias'
 
-from Camera import Camera
-from ComDevice import ComDevice
+from src.Camera import Camera
+from src.ComDevice import ComDevice
 
 import time
 import Queue
