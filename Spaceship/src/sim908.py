@@ -20,6 +20,9 @@ class Position:
 
     @staticmethod
     def convert(string):
+        if string == "0.000000":
+            return 0.0
+
         d = int(string[:2])
         m = float(string[2:])
         return float(d+m/60)
@@ -52,6 +55,8 @@ class Sim908:
 
         self.send_command("AT+CGPSPWR=1")
         self.send_command("AT+CGPSRST=1")
+        self.send_command("AT")
+        time.sleep(10)
 
     def get_gps_position(self):
         gps = self.send_command("AT+CGPSINF=0")
