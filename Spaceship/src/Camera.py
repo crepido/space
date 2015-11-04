@@ -84,8 +84,9 @@ class Camera(threading.Thread):
     def run_mode_1(self, i):
         if i % 10 == 0:
             self.movie10s()
-            self.take_picture()
-            self.send_picture()
+            filename = self.take_picture()
+            if i == 0:
+                self.send_picture(filename)
 
             if self.camera_position == "vertical":
                 self.position_camera("horizontal")
@@ -130,14 +131,21 @@ class Camera(threading.Thread):
         time.sleep(0.5)
 
     def take_picture(self):
-        print("take_picture "+self.camera_position)
-        os.system("raspistill -h 300 -w 533 -o data/low-"+str(time.time())+".jpg")
-        os.system("raspistill -o data/high-"+str(time.time())+".jpg")
+        filename = str(time.time())+".jpg"
+
+        filename_low = "data/low-"+filename
+        filename_high = "data/high-"+filename
+
+        print("take_picture "+self.camera_position+", filename"+filename_low)
+        os.system("raspistill -h 300 -w 533 -o "+filename_low)
+        os.system("raspistill -o "+filename_high)
+
+        return filename_low
 
     def movie10s(self):
         print("10 sek movie "+self.camera_position)
         time.sleep(10)
 
-    def send_picture(self):
-        print("send picture")
-        # Copy file to data/send
+    def send_picture(self, filename):
+        print("send picture "+filename)
+        os.system("mv "+filename+" data/send")
