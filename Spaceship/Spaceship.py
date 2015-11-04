@@ -1,14 +1,15 @@
 __author__ = 'tobias'
 
 from Camera import Camera
-from GPS_Logger import ComDevice
+from ComDevice import ComDevice
 
 import time
 import Queue
 
 
-class Space:
+class Spaceship:
     def __init__(self):
+        print("Starting Spaceship")
         self.q_mode_camera = Queue.Queue()
         self.q_mode_com_device = Queue.Queue()
         self.q_com_device_out = Queue.Queue()
@@ -26,6 +27,7 @@ class Space:
         self.running = False
         self.set_mode("EXIT")
         print("All shut down")
+        print("Shutdown Spaceship")
 
     def run(self):
 
@@ -55,7 +57,5 @@ class Space:
             self.shutdown()
 
 
-space = Space()
+space = Spaceship()
 space.run()
-
-print("SSS")

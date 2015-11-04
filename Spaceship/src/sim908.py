@@ -53,7 +53,7 @@ class Sim908:
         self.send_command("AT+CGPSPWR=1")
         self.send_command("AT+CGPSRST=1")
 
-    def get_gps_location(self):
+    def get_gps_position(self):
         gps = self.send_command("AT+CGPSINF=0")
         pos = Position(gps)
         return pos

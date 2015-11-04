@@ -27,7 +27,7 @@ class ComDevice(threading.Thread):
                 os.remove("data/send/" + item)
 
     def run(self):
-        print("Starting GPS Logger")
+        print("Starting ComDevice")
 
         i = 0
         while self.running:
@@ -52,24 +52,31 @@ class ComDevice(threading.Thread):
             except Queue.Empty:
                 None
 
-            time.sleep(1)
+            position = self.sim.get_gps_position()
+            self.send_gps_position(position)
 
-            i += 1
+            time.sleep(10)
 
-            if i == 250:
+            i += 10
+
+            if i == 100:
                 # Mode 3, Ballong har brustit och vi faller
                 self.q_com_device_out.put("Mode 3")
 
-            if i == 400:
+            if i == 200:
                 # Mode 4, GPRS Online, Faller vidare
                 self.q_com_device_out.put("Mode 4")
 
-            if i == 500:
+            if i == 300:
                 # Mode 5, Vi har landat
                 self.q_com_device_out.put("Mode 5")
 
             if self.mode == "Mode 1" or self.mode == "Mode 4":
                 self.send_images()
 
-        print("Stopping GPS Logger")
+        print("Stopping ComDevice")
 
+    def send_gps_position(self, position):
+        print("Sending gps position...")
+        print("Latitude: %f" % position.get_latitude())
+        print("Longitude: %f" % position.get_longitude())

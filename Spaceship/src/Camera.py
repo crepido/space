@@ -1,6 +1,6 @@
 __author__ = 'tobias'
 
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import threading
 import Queue
@@ -9,10 +9,10 @@ import Queue
 class Camera(threading.Thread):
     def __init__(self, q_mode):
         self.q_mode = q_mode
-        #GPIO.setmode(GPIO.BOARD)
-        #GPIO.setup(7, GPIO.OUT)
-        #p = GPIO.PWM(7, 50)
-        #p.start(7.5)
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(7, GPIO.OUT)
+        self.pwm = GPIO.PWM(7, 50)
+        self.pwn.start(7.5)
         self.camera_position = "horizontal"
 
         self.mode = 1
@@ -122,11 +122,9 @@ class Camera(threading.Thread):
         print("position camera")
 
         if position == "vertical":
-            # p.start(10.5)
-            None
+            self.pwm.start(10.5)
         elif self.camera_position == "horizontal":
-            # p.start(7.5)
-            None
+            self.pwm.start(7.5)
         self.camera_position = position
         time.sleep(0.5)
 
