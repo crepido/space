@@ -11,17 +11,17 @@ class Spaceship:
     def __init__(self):
         print("Starting Spaceship")
         self.q_mode_camera = Queue.Queue()
-        self.q_mode_com_device = Queue.Queue()
+        self.q_com_device_in = Queue.Queue()
         self.q_com_device_out = Queue.Queue()
 
         self.camera = Camera(self.q_mode_camera)
-        self.gps_logger = ComDevice(self.q_mode_com_device, self.q_com_device_out)
+        self.com_device = ComDevice(self.q_com_device_in, self.q_com_device_out)
         self.running = True
 
     def set_mode(self, mode):
         print("Setting mode "+mode)
         self.q_mode_camera.put(mode)
-        self.q_mode_com_device.put(mode)
+        self.q_com_device_in.put(mode)
 
     def shutdown(self):
         self.running = False
@@ -29,28 +29,28 @@ class Spaceship:
         print("All shut down")
         print("Shutdown Spaceship")
 
+    def check_queue(self):
+        try:
+            msg = self.q_com_device_out.get_nowait().upper()
+            if msg == "MODE 1" \
+                    or msg == "MODE 2" \
+                    or msg == "MODE 3" \
+                    or msg == "MODE 4" \
+                    or msg == "MODE 5" \
+                    or msg == "START" \
+                    or msg == "EXIT":
+                self.set_mode(msg)
+        except Queue.Empty:
+            None
+
     def run(self):
 
-        self.gps_logger.start()
+        self.com_device.start()
         self.camera.start()
 
         try:
-            self.set_mode("Mode 1")
-            time.sleep(100)
-            self.set_mode("Mode 2")
-
             while self.running:
-                try:
-                    msg = self.q_com_device_out.get_nowait()
-                    if msg == "Mode 3":
-                        self.set_mode("Mode 3")
-                    if msg == "Mode 4":
-                        self.set_mode("Mode 4")
-                    if msg == "Mode 5":
-                        self.set_mode("Mode 5")
-                except Queue.Empty:
-                    None
-
+                self.check_queue()
                 time.sleep(1)
 
         except KeyboardInterrupt:

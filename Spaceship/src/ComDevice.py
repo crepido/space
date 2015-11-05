@@ -13,7 +13,7 @@ class ComDevice(threading.Thread):
     def __init__(self,  q_com_device_in, q_com_device_out):
         super(ComDevice, self).__init__()
 
-        self.sim = Sim908()
+        self.sim = Sim908(True)
         self.q_com_device_in = q_com_device_in
         self.q_com_device_out = q_com_device_out
         self.mode = "Mode 1"
@@ -26,31 +26,47 @@ class ComDevice(threading.Thread):
                 print("Processing " + item)
                 os.remove("data/send/" + item)
 
+    def check_incoming_sms(self):
+        msg = self.sim.read_one_sms().upper()
+        if msg == "START":
+            self.q_com_device_out.put(msg)
+        elif msg == "MODE 1":
+            self.q_com_device_out.put(msg)
+        elif msg == "MODE 2":
+            self.q_com_device_out.put(msg)
+        elif msg == "MODE 3":
+            self.q_com_device_out.put(msg)
+        elif msg == "MODE 4":
+            self.q_com_device_out.put(msg)
+        elif msg == "EXIT":
+            self.q_com_device_out.put(msg)
+
+    def check_incoming_queue(self):
+        try:
+            msg = self.q_mode.get_nowait().upper()
+            if msg == "MODE 1" \
+                    or msg == "MODE 2" \
+                    or msg == "MODE 3" \
+                    or msg == "MODE 4" \
+                    or msg == "MODE 5" \
+                    or msg == "START":
+
+                print("Com: "+msg)
+                self.mode = msg
+            elif msg == "STOP" or msg == "EXIT":
+                print("Com: Got exit")
+                self.running = False
+
+        except Queue.Empty:
+            None
+
     def run(self):
         print("Starting ComDevice")
 
         i = 0
         while self.running:
-            try:
-                # print("gps...")
-                msg = self.q_com_device_in.get_nowait()
-                if msg == "Mode 1":
-                    self.mode = msg
-                    print("Mode 1")
-                elif msg == "Mode 2":
-                    self.mode = msg
-                    print("Mode 2")
-                elif msg == "Mode 3":
-                    self.mode = msg
-                    print("Mode 3")
-                elif msg == "Mode 4":
-                    self.mode = msg
-                    print("Mode 4")
-                elif msg == "EXIT":
-                    print("Got exit")
-                    self.running = False
-            except Queue.Empty:
-                None
+            self.check_incoming_queue()
+            self.check_incoming_sms()
 
             position = self.sim.get_gps_position()
             self.send_gps_position(position)

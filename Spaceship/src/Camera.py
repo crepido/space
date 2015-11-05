@@ -25,22 +25,17 @@ class Camera(threading.Thread):
 
     def check_messages(self):
         try:
-            msg = self.q_mode.get_nowait()
+            msg = self.q_mode.get_nowait().upper()
+            if msg == "MODE 1" \
+                    or msg == "MODE 2" \
+                    or msg == "MODE 3" \
+                    or msg == "MODE 4" \
+                    or msg == "MODE 5" \
+                    or msg == "START":
 
-            if msg == "Mode 1":
-                print("Cam: Mode 1")
+                print("Cam: "+msg)
                 self.mode = msg
-            elif msg == "Mode 2":
-                print("Cam: Mode 2")
-                self.mode = msg
-            elif msg == "Mode 3":
-                print("Cam: Mode 3")
-                self.mode = msg
-            elif msg == "Mode 4":
-                print("Cam: Mode 4")
-                self.mode = msg
-
-            if msg == "EXIT":
+            elif msg == "STOP" or msg == "EXIT":
                 print("Cam: Got exit")
                 self._running = False
 
@@ -69,8 +64,8 @@ class Camera(threading.Thread):
                 self.run_mode_4(i)
             if self.mode == "Mode 5":
                 self.run_mode_5(i)
-
-            time.sleep(0.1)
+            else:
+                time.sleep(1)
 
             i += 1
             if i >= 60:

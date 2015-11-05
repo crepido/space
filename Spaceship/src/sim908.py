@@ -48,7 +48,8 @@ class Position:
 
 class Sim908:
 
-    def __init__(self):
+    def __init__(self, debug):
+        self.debug = debug
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
         self.ser.open()
@@ -82,10 +83,20 @@ class Sim908:
         self.send_command("\x1A")  # TODO Must send as HEX... This may not work yet...
 
     def read_one_sms(self):
-        # Read
-        print(self.send_command("AT+CMGR=1"))
-        # Delete
-        print(self.send_command("AT+CMGD=1"))
+        sms_list = self.send_command("AT+CMGL=\"ALL\"")
+        for x in range(0, len(sms_list)):
+            if sms_list[x].startswith("+CMGL:"):
+                ctr = sms_list[x]
+                msg = sms_list[x+1]
+
+                if self.debug:
+                    print("SMS "+str(x)+":"+msg)
+
+                index = int(sms_list[x].split(",")[0].split(":")[1])
+                # Delete
+                self.send_command("AT+CMGD="+str(index))
+
+                return msg
 
     def send_command(self, com):
         self.ser.write(com+"\r\n")
@@ -97,6 +108,10 @@ class Sim908:
             msg = msg.replace("\n", "")
             if msg != "":
                 ret.append(msg)
+
+        if self.debug:
+            print(ret)
+
         return ret
 
     def send_command_with_result(self, command, expected_result):
