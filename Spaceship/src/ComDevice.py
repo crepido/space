@@ -104,17 +104,17 @@ class ComDevice(threading.Thread):
 
             i += 10
 
-            if i == 100:
-                # Mode 3, Ballong har brustit och vi faller
-                self.q_com_device_out.put("Mode 3")
-
-            if i == 200:
-                # Mode 4, GPRS Online, Faller vidare
-                self.q_com_device_out.put("Mode 4")
-
-            if i == 300:
-                # Mode 5, Vi har landat
-                self.q_com_device_out.put("Mode 5")
+            # if i == 100:
+            #     # Mode 3, Ballong har brustit och vi faller
+            #     self.q_com_device_out.put("Mode 3")
+            #
+            # if i == 200:
+            #     # Mode 4, GPRS Online, Faller vidare
+            #     self.q_com_device_out.put("Mode 4")
+            #
+            # if i == 300:
+            #     # Mode 5, Vi har landat
+            #     self.q_com_device_out.put("Mode 5")
 
             if self.mode == "Mode 1" or self.mode == "Mode 4":
                 self.send_images()
