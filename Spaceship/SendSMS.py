@@ -5,7 +5,6 @@ import time
 
 
 sim = src.sim908.Sim908()
-time.sleep(1)
 
 #position = sim.get_gps_position()
 #print(position.get_latitude())
@@ -14,7 +13,7 @@ time.sleep(1)
 #sim.reset()
 #sim.send_sms('+46733770119', "test")
 
-sim.receive()
+sim.read_one_sms()
 
 time.sleep(1)
 print("done")
