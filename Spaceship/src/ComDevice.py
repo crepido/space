@@ -42,6 +42,10 @@ class ComDevice(threading.Thread):
             elif cmd == "IP":
                 res = os.system("ifconfig | grep eth0 -A 2 | grep \"inet addr\"")
                 self.sim.send_sms(sms[0], res)
+            elif cmd == "POS":
+                position = self.sim.get_gps_position()
+                msg = str(position.get_latitude()) + " " + str(position.get_longitude())
+                self.sim.send_sms(sms[0], msg)
 
     def check_incoming_queue(self):
         try:
