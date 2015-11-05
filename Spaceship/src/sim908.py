@@ -54,6 +54,7 @@ class Sim908:
         self.ser.close()
         self.ser.open()
 
+    def start_gps(self):
         self.send_command("AT+CGPSPWR=1")
         self.send_command("AT+CGPSRST=1")
         self.send_command("AT")
