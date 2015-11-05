@@ -78,7 +78,7 @@ class Sim908:
         self.send_command("AT+CSCA?")
         self.send_command("AT+CMGF=1")  # Set sms message format
         self.send_command("AT+CMGS=\""+str(number)+"\"", [">"])  # Set sms message format
-        self.send_command(text)
+        self.send_command(text, [">"])
         self.send_command("\x1A")
         self.send_command("AT")
 
