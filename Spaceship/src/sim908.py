@@ -57,7 +57,6 @@ class Sim908:
         self.send_command("AT+CGPSPWR=1")
         self.send_command("AT+CGPSRST=1")
         self.send_command("AT")
-        time.sleep(10)
 
     def get_gps_position(self):
         gps = self.send_command("AT+CGPSINF=0")
