@@ -127,7 +127,7 @@ class Camera(threading.Thread):
         if position == "vertical":
             print("change duty cycle 10.5")
             self.pwm.ChangeDutyCycle(10.5)
-        elif self.camera_position == "horizontal":
+        elif position == "horizontal":
             print("change duty cycle 4.5")
             self.pwm.ChangeDutyCycle(4.5)
 
