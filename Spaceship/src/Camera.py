@@ -132,12 +132,14 @@ class Camera(threading.Thread):
         print("position camera "+self.camera_position+">"+position)
 
         GPIO.output(13, GPIO.HIGH)
+        time.sleep(0.5)
         if position == "vertical":
             print("change duty cycle 10.5")
             self.pwm.ChangeDutyCycle(10.5)
         elif position == "horizontal":
             print("change duty cycle 5.5")
             self.pwm.ChangeDutyCycle(5.5)
+        time.sleep(0.5)
         GPIO.output(13, GPIO.LOW)
 
         self.camera_position = position
