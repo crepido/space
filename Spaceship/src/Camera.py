@@ -12,6 +12,10 @@ class Camera(threading.Thread):
         self.q_mode = q_mode
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(7, GPIO.OUT)
+        GPIO.setup(11, GPIO.OUT)
+
+        GPIO.output(11, GPIO.HIGH)
+
         self.pwm = GPIO.PWM(7, 50)
         self.pwm.start(7.5)
         self.camera_position = "horizontal"
@@ -80,6 +84,7 @@ class Camera(threading.Thread):
                 t = t2 - t1
                 print("time: "+str(t))
 
+        GPIO.cleanup()
         print("Stopping camera")
 
     def run_mode_1(self, i):
