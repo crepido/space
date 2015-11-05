@@ -77,7 +77,7 @@ class Sim908:
         self.send_command_with_result("AT", "OK")
         self.send_command("AT+CSCA?")
         self.send_command("AT+CMGF=1")  # Set sms message format
-        self.send_command_with_result("AT+CMGS=\""+number+"\"", ">")  # Set sms message format
+        self.send_command_with_result("AT+CMGS=\""+str(number)+"\"", ">")  # Set sms message format
         self.send_command(text)
         self.send_command("\x1A")  # TODO Must send as HEX... This may not work yet...
 
@@ -95,7 +95,7 @@ class Sim908:
                 # Delete
                 self.send_command("AT+CMGD="+str(index))
 
-                msisdn = ctr.split(",")[2].replace("\"", "")
+                msisdn = str(ctr.split(",")[2].replace("\"", ""))
                 print("MSISDN: " + msisdn)
                 return [msisdn, msg]
 
