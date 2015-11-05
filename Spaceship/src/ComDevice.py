@@ -128,3 +128,19 @@ class ComDevice(threading.Thread):
         print("Sending gps position...")
         print("Latitude: %f" % position.get_latitude())
         print("Longitude: %f" % position.get_longitude())
+        
+        str_lat = str(position.get_latitude())
+        str_lon = str(position.get_longitude())
+        str_alt = str(position.get_altitude())
+
+        self.sim.send_command("AT+CGATT?")
+        self.sim.send_command("AT+CGATT=1")
+        self.sim.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
+        self.sim.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
+        self.sim.send_command("AT+SAPBR=1,1")
+        self.sim.send_command("AT+HTTPINIT")
+        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"\"")
+        self.sim.send_command("AT+HTTPACTION=1")
+        self.sim.send_command("AT+HTTPREAD")
+
+        print("done")
