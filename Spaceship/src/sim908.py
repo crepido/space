@@ -81,6 +81,7 @@ class Sim908:
         self.send_command(text)
         self.send_command("\x1A")  # TODO Must send as HEX... This may not work yet...
         time.sleep(10)
+        self.send_command("AT")
 
     def read_one_sms(self):
         sms_list = self.send_command("AT+CMGL=\"ALL\"")

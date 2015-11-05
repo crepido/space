@@ -45,7 +45,7 @@ class ComDevice(threading.Thread):
                 self.sim.send_sms(sms[0], res)
             elif cmd == "POS":
                 position = self.sim.get_gps_position()
-                msg = str(position.get_latitude()) + " " + str(position.get_longitude())
+                msg = str(position.get_longitude()) + " " + str(position.get_latitude())
                 self.sim.send_sms(sms[0], msg)
 
     def check_incoming_queue(self):
