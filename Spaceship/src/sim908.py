@@ -53,6 +53,7 @@ class Sim908:
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
         self.ser.open()
+        self.start_gps()
 
     def start_gps(self):
         self.send_command("AT+CGPSPWR=1")
