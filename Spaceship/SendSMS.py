@@ -17,7 +17,5 @@ sim.send_sms("+46704173699", "SMS from Spacecraft")
 
 #sim.send_sms('+46733770119', "test")
 
-#sim.read_one_sms()
 
-#time.sleep(1)
 print("done")

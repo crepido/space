@@ -4,7 +4,6 @@ import src.sim908
 import time
 
 sim = src.sim908.Sim908(True)
-time.sleep(10)
 
 while True:
     position = sim.get_gps_position()

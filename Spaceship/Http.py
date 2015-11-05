@@ -5,7 +5,6 @@ import time
 
 
 sim = src.sim908.Sim908(True)
-time.sleep(1)
 
 sim.send_command("AT+CGATT?")
 sim.send_command("AT+CGATT=1")
