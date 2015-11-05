@@ -95,7 +95,7 @@ class Sim908:
                 # Delete
                 self.send_command("AT+CMGD="+str(index))
 
-                msisdn = ctr.split(",")[2]
+                msisdn = ctr.split(",")[2].replace("\"", "")
                 print("MSISDN: " + msisdn)
                 return [msisdn, msg]
 
