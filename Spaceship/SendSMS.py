@@ -11,9 +11,8 @@ sim = src.sim908.Sim908(True)
 #print(position.get_longitude())
 
 #sim.reset()
-#sim.send_sms('+46733770119', "test")
+sim.send_sms('+46733770119', "test")
 
-sim.read_one_sms()
+#sim.read_one_sms()
 
-time.sleep(1)
 print("done")

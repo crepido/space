@@ -75,10 +75,10 @@ class ComDevice(threading.Thread):
     def check_online(self):
         if not self.online and self.sim.is_online():
             self.online = True
-            self.online_action(self.online)
+            self.online_action()
         if self.online and not self.sim.is_online():
             self.online = False
-            self.online_action(self.online)
+            self.online_action()
 
     def run(self):
         print("Starting ComDevice")
@@ -120,6 +120,9 @@ class ComDevice(threading.Thread):
                 self.send_images()
 
         print("Stopping ComDevice")
+
+    def online_action(self):
+        print("Now "+str(self.online))
 
     def send_gps_position(self, position):
         print("Sending gps position...")
