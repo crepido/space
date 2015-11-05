@@ -4,7 +4,7 @@ import src.sim908
 import time
 
 
-sim = src.sim908.Sim908()
+sim = src.sim908.Sim908(True)
 
 #position = sim.get_gps_position()
 #print(position.get_latitude())
