@@ -42,7 +42,7 @@ class ComDevice(threading.Thread):
 
     def check_incoming_queue(self):
         try:
-            msg = self.q_mode.get_nowait().upper()
+            msg = self.q_com_device_in.get_nowait().upper()
             if msg == "MODE 1" \
                     or msg == "MODE 2" \
                     or msg == "MODE 3" \
