@@ -117,6 +117,7 @@ class Sim908:
 
             i += 1
             if i > 10:
+                print(ret)
                 raise RuntimeError("Expected result")
 
         if self.debug:
