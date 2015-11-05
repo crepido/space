@@ -4,6 +4,7 @@ import threading
 import time
 import Queue
 import os
+import subprocess
 
 from sim908 import Sim908
 
@@ -40,7 +41,7 @@ class ComDevice(threading.Thread):
                     or cmd == "EXIT":
                 self.q_com_device_out.put(cmd)
             elif cmd == "IP":
-                res = os.system("ifconfig | grep eth0 -A 2 | grep \"inet addr\"")
+                res = subprocess.check_output("ifconfig | grep eth0 -A 2 | grep \"inet addr\"", shell=True)
                 self.sim.send_sms(sms[0], res)
             elif cmd == "POS":
                 position = self.sim.get_gps_position()
