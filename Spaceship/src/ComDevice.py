@@ -28,18 +28,16 @@ class ComDevice(threading.Thread):
 
     def check_incoming_sms(self):
         msg = self.sim.read_one_sms().upper()
-        if msg == "START":
+        if msg == "START" \
+                or msg == "MODE 1" \
+                or msg == "MODE 2" \
+                or msg == "MODE 3" \
+                or msg == "MODE 4" \
+                or msg == "MODE 5" \
+                or msg == "EXIT":
             self.q_com_device_out.put(msg)
-        elif msg == "MODE 1":
-            self.q_com_device_out.put(msg)
-        elif msg == "MODE 2":
-            self.q_com_device_out.put(msg)
-        elif msg == "MODE 3":
-            self.q_com_device_out.put(msg)
-        elif msg == "MODE 4":
-            self.q_com_device_out.put(msg)
-        elif msg == "EXIT":
-            self.q_com_device_out.put(msg)
+        elif msg == "IP":
+            None
 
     def check_incoming_queue(self):
         try:
