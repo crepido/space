@@ -80,6 +80,7 @@ class Sim908:
         self.send_command_with_result("AT+CMGS=\""+str(number)+"\"", ">")  # Set sms message format
         self.send_command(text)
         self.send_command("\x1A")  # TODO Must send as HEX... This may not work yet...
+        time.sleep(2)
 
     def read_one_sms(self):
         sms_list = self.send_command("AT+CMGL=\"ALL\"")
