@@ -27,18 +27,21 @@ class ComDevice(threading.Thread):
                 os.remove("data/send/" + item)
 
     def check_incoming_sms(self):
-        sms = self.sim.read_one_sms().upper()
-        if sms[1] == "START" \
-                or sms[1] == "MODE 1" \
-                or sms[1] == "MODE 2" \
-                or sms[1] == "MODE 3" \
-                or sms[1] == "MODE 4" \
-                or sms[1] == "MODE 5" \
-                or sms[1] == "EXIT":
-            self.q_com_device_out.put(sms[1])
-        elif sms[1] == "IP":
-            res = os.system("ifconfig | grep eth0 -A 2 | grep \"inet addr\"")
-            self.sim.send_sms(sms[0], res)
+        sms = self.sim.read_one_sms()
+        if sms is not None:
+            cmd = sms[1].upper()
+
+            if cmd == "START" \
+                    or cmd == "MODE 1" \
+                    or cmd == "MODE 2" \
+                    or cmd == "MODE 3" \
+                    or cmd == "MODE 4" \
+                    or cmd == "MODE 5" \
+                    or cmd == "EXIT":
+                self.q_com_device_out.put(cmd)
+            elif cmd == "IP":
+                res = os.system("ifconfig | grep eth0 -A 2 | grep \"inet addr\"")
+                self.sim.send_sms(sms[0], res)
 
     def check_incoming_queue(self):
         try:
