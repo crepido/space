@@ -142,7 +142,7 @@ class ComDevice(threading.Thread):
 
 
         self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"\"")
-        self.sim.send_command("AT+HTTPACTION=1")
-        self.sim.send_command_contains("AT+HTTPREAD", ["+HTTPACTION:"])
+        self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+
 
         print("done")
