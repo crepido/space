@@ -6,5 +6,9 @@ import time
 sim = src.sim908.Sim908(True)
 
 while True:
-    sim.read_one_sms()
+    sms = sim.read_one_sms()
+
+    print("Avsändare: "+sms[0])
+    print("SMS: "+sms[1])
+
     time.sleep(5)

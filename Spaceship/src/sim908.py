@@ -96,11 +96,9 @@ class Sim908:
                 # Delete
                 self.send_command("AT+CMGD="+str(index))
 
-                print(ctr.split(","))
-
-                res = ["+467777777", msg]
-
-                return res
+                msisdn = ctr.split(",")[2]
+                print("MSISDN: " + msisdn)
+                return [msisdn, msg]
 
     def send_command(self, com):
         self.ser.write(com+"\r\n")
