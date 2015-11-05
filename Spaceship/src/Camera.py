@@ -125,9 +125,9 @@ class Camera(threading.Thread):
         print("position camera")
 
         if position == "vertical":
-            self.pwm.start(10.5)
+            self.pwm.ChangeDutyCycle(10.5)
         elif self.camera_position == "horizontal":
-            self.pwm.start(7.5)
+            self.pwm.ChangeDutyCycle(4.5)
         self.camera_position = position
         time.sleep(0.5)
 
