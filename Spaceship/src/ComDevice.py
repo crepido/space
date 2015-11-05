@@ -19,6 +19,9 @@ class ComDevice(threading.Thread):
         self.q_com_device_out = q_com_device_out
         self.mode = "Mode 1"
         self.running = True
+        self.max_altitude = 0
+
+        self.online = False
 
     def send_images(self):
         list = os.listdir("data/send")
@@ -48,6 +51,10 @@ class ComDevice(threading.Thread):
                 msg = str(position.get_longitude()) + " " + str(position.get_latitude())
                 self.sim.send_sms(sms[0], msg)
 
+    def change_mode(self, msg):
+        print("Com: " + msg)
+        self.mode = msg
+
     def check_incoming_queue(self):
         try:
             msg = self.q_com_device_in.get_nowait().upper()
@@ -57,15 +64,21 @@ class ComDevice(threading.Thread):
                     or msg == "MODE 4" \
                     or msg == "MODE 5" \
                     or msg == "START":
-
-                print("Com: "+msg)
-                self.mode = msg
+                self.change_mode(msg)
             elif msg == "STOP" or msg == "EXIT":
                 print("Com: Got exit")
                 self.running = False
 
         except Queue.Empty:
             None
+
+    def check_online(self):
+        if not self.online and self.sim.is_online():
+            self.online = True
+            self.online_action(self.online)
+        if self.online and not self.sim.is_online():
+            self.online = False
+            self.online_action(self.online)
 
     def run(self):
         print("Starting ComDevice")
@@ -77,6 +90,15 @@ class ComDevice(threading.Thread):
 
             position = self.sim.get_gps_position()
             self.send_gps_position(position)
+
+            # Save max altitude
+            if position.get_altitude() > self.max_altitude:
+                self.max_altitude = position.get_altitude()
+
+            if self.mode == "MODE 3":
+                altitude = position.get_altitude()
+
+            self.check_online()
 
             time.sleep(10)
 

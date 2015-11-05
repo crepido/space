@@ -101,24 +101,51 @@ class Sim908:
                 print("MSISDN: " + msisdn)
                 return [msisdn, msg]
 
-    def send_command(self, com):
+    def send_command(self, com, expected_result=["OK", "ERROR"]):
+        response = False
         self.ser.write(com+"\r\n")
-        time.sleep(2)
         ret = []
-        while self.ser.inWaiting() > 0:
+        i = 0
+        while not response:
             msg = self.ser.readline().strip()
             msg = msg.replace("\r", "")
             msg = msg.replace("\n", "")
             if msg != "":
                 ret.append(msg)
 
+            if self.is_done(msg, expected_result):
+                response = True
+
+            i += 1
+            if i > 10:
+                raise RuntimeError("Expected result")
+
         if self.debug:
             print(ret)
 
         return ret
 
+    def is_done(self, msg, expected_result):
+        for res in expected_result:
+            if msg == res:
+                return True
+        return False
+
     def send_command_with_result(self, command, expected_result):
         result = self.send_command(command)
         if result[1] != expected_result:
             raise RuntimeError("Error in command response")
+        return True
+
+    def is_online(self):
+        res = self.send_command("AT+CSQ")
+        signal = int(res[1].split(":")[1].split(",")[0])
+
+        print("Signal level: "+str(signal))
+        if signal == 99:
+            print("no connection")
+            return False
+        if signal > 10:
+            print(">10")
+
         return True

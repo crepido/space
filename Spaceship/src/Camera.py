@@ -34,13 +34,19 @@ class Camera(threading.Thread):
                     or msg == "START":
 
                 print("Cam: "+msg)
-                self.mode = msg
+                self.change_mode(msg)
             elif msg == "STOP" or msg == "EXIT":
                 print("Cam: Got exit")
                 self._running = False
 
         except Queue.Empty:
             None
+
+    def change_mode(self, msg):
+        self.mode = msg
+
+        if msg == "MODE 3":
+            print("Falling")
 
     def run(self):
         print "Starting Camera"
@@ -54,15 +60,15 @@ class Camera(threading.Thread):
 
             self.check_messages()
 
-            if self.mode == "Mode 1":
+            if self.mode == "MODE 1":
                 self.run_mode_1(i)
-            if self.mode == "Mode 2":
+            if self.mode == "MODE 2":
                 self.run_mode_2(i)
-            if self.mode == "Mode 3":
+            if self.mode == "MODE 3":
                 self.run_mode_3(i)
-            if self.mode == "Mode 4":
+            if self.mode == "MODE 4":
                 self.run_mode_4(i)
-            if self.mode == "Mode 5":
+            if self.mode == "MODE 5":
                 self.run_mode_5(i)
             else:
                 time.sleep(1)

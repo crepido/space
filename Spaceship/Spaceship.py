@@ -37,9 +37,10 @@ class Spaceship:
                     or msg == "MODE 3" \
                     or msg == "MODE 4" \
                     or msg == "MODE 5" \
-                    or msg == "START" \
-                    or msg == "EXIT":
+                    or msg == "START":
                 self.set_mode(msg)
+            elif msg == "EXIT":
+                self.shutdown()
         except Queue.Empty:
             None
 
