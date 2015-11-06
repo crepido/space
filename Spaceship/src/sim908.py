@@ -18,6 +18,12 @@ class Position:
             self.altitude = gps_data_list[3]
             self.speed = gps_data_list[7]
             self.course = gps_data_list[8]
+        else:
+            self.longitude = 0.0
+            self.latitude = 0.0
+            self.altitude = 0.0
+            self.speed = 0.0
+            self.course = 0.0
 
     @staticmethod
     def convert(string):
