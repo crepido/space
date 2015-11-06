@@ -54,6 +54,7 @@ class ComDevice(threading.Thread):
                     or cmd == "MODE 5" \
                     or cmd == "EXIT":
                 self.q_com_device_out.put(cmd)
+                self.sim.send_sms(sms[0], "OK")
             elif cmd == "IP":
                 res = subprocess.check_output("ifconfig | grep eth0 -A 2 | grep \"inet addr\"", shell=True)
                 self.sim.send_sms(sms[0], res)
@@ -61,6 +62,8 @@ class ComDevice(threading.Thread):
                 position = self.sim.get_gps_position()
                 msg = str(position.get_longitude()) + " " + str(position.get_latitude())
                 self.sim.send_sms(sms[0], msg)
+            else:
+                self.sim.send_sms(sms[0], "Error")
 
     def change_mode(self, msg):
         logging.debug("Com: " + msg)
