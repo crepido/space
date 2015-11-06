@@ -15,7 +15,7 @@ class Position:
 
             self.longitude = Position.convert(lon)
             self.latitude = Position.convert(lat)
-            self.altitude = gps_data_list[3]
+            self.altitude = float(gps_data_list[3])
             self.speed = gps_data_list[7]
             self.course = gps_data_list[8]
         else:
