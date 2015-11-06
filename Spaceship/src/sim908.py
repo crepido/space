@@ -49,18 +49,34 @@ class Position:
 
 class Sim908:
 
-    def __init__(self, debug):
+    def __init__(self):
         logging.debug("init Sim908")
-        self.debug = debug
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
         self.ser.open()
-        self.start_gps()
 
     def start_gps(self):
-        self.send_command("AT+CGPSPWR=1")
-        self.send_command("AT+CGPSRST=1")
-        self.send_command("AT")
+        try:
+            self.send_command("AT+CGPSPWR=1")
+            self.send_command("AT+CGPSRST=1")
+            self.send_command("AT")
+            return True
+        except RuntimeError:
+            logging.exception("Failed to init gps")
+            return False
+
+    def start_http(self):
+        try:
+            self.send_command("AT+CGATT?")
+            self.send_command("AT+CGATT=1")
+            self.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
+            self.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
+            self.send_command("AT+SAPBR=1,1")
+            self.send_command("AT+HTTPINIT")
+            return True
+        except RuntimeError:
+            logging.error("Failed to init ComDevice")
+            return False
 
     def get_gps_position(self):
         try:
@@ -69,6 +85,7 @@ class Sim908:
             return pos
         except RuntimeError:
             logging.exception("Failed to get gps position")
+            self.start_gps()
             return Position("")
 
     def gps_power_on(self):
@@ -97,8 +114,7 @@ class Sim908:
                 ctr = sms_list[x]
                 msg = sms_list[x+1]
 
-                if self.debug:
-                    logging.debug("SMS "+str(x)+":"+msg)
+                logging.debug("SMS "+str(x)+":"+msg)
 
                 index = int(sms_list[x].split(",")[0].split(":")[1])
                 # Delete
@@ -190,3 +206,4 @@ class Sim908:
         except RuntimeError:
             logging.error("Failed to check online status")
             return False
+

@@ -15,7 +15,7 @@ class ComDevice(threading.Thread):
     def __init__(self,  q_com_device_in, q_com_device_out):
         super(ComDevice, self).__init__()
 
-        self.sim = Sim908(True)
+        self.sim = Sim908()
         self.q_com_device_in = q_com_device_in
         self.q_com_device_out = q_com_device_out
         self.mode = "Mode 1"
@@ -24,15 +24,8 @@ class ComDevice(threading.Thread):
 
         self.online = False
 
-        try:
-            self.sim.send_command("AT+CGATT?")
-            self.sim.send_command("AT+CGATT=1")
-            self.sim.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
-            self.sim.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
-            self.sim.send_command("AT+SAPBR=1,1")
-            self.sim.send_command("AT+HTTPINIT")
-        except RuntimeError:
-            logging.error("Failed to init ComDevice")
+        self.sim.start_gps()
+        self.sim.start_http()
 
     def send_images(self):
         list = os.listdir("data/send")
@@ -164,5 +157,6 @@ class ComDevice(threading.Thread):
             self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
         except RuntimeError:
             logging.exception("Failed to send commands.")
+            self.sim.start_http()
 
         logging.info("done")
