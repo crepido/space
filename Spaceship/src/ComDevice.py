@@ -99,6 +99,8 @@ class ComDevice(threading.Thread):
             except RuntimeError:
                 logging.exception("Failed to read incoming sms or queue")
 
+            self.check_online()
+
             # Each 10 sec
             if i % 10 == 0:
                 position = self.sim.get_gps_position()
@@ -121,7 +123,7 @@ class ComDevice(threading.Thread):
                 elif self.mode == "MODE 5":
                     self.send_gps_position(position)
 
-            self.check_online()
+
 
             time.sleep(1)
 
@@ -153,16 +155,19 @@ class ComDevice(threading.Thread):
     def send_gps_position(self, position):
         logging.info("Latitude: %f" % position.get_latitude())
         logging.info("Longitude: %f" % position.get_longitude())
-        
+        logging.info("Altitude: %f" % position.get_altitude())
+
         str_lat = str(position.get_latitude())
         str_lon = str(position.get_longitude())
         str_alt = str(position.get_altitude())
 
         try:
-            self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
-            self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+            if self.online:
+                self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
+                self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+                logging.info("Skickat gps")
+            else:
+                logging.info("Offline, skickar inte gps")
         except RuntimeError:
             logging.exception("Failed to send commands.")
             self.sim.start_http()
-
-        logging.info("done")
