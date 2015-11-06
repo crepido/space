@@ -96,19 +96,25 @@ class ComDevice(threading.Thread):
             self.check_incoming_queue()
             self.check_incoming_sms()
 
-            position = self.sim.get_gps_position()
-            self.send_gps_position(position)
+            if self.mode == "MODE 1" \
+                    or self.mode == "MODE 2" \
+                    or self.mode == "MODE 3" \
+                    or self.mode == "MODE 4" \
+                    or self.mode == "MODE 5":
 
-            # Save max altitude
-            if position.get_altitude() > self.max_altitude:
-                self.max_altitude = position.get_altitude()
+                position = self.sim.get_gps_position()
+                self.send_gps_position(position)
 
-            if self.mode == "MODE 3":
-                altitude = position.get_altitude()
+                # Save max altitude
+                if position.get_altitude() > self.max_altitude:
+                    self.max_altitude = position.get_altitude()
+
+                if self.mode == "MODE 3":
+                    altitude = position.get_altitude()
 
             self.check_online()
 
-            time.sleep(10)
+            time.sleep(1)
 
             i += 10
 
