@@ -212,7 +212,7 @@ class Sim908:
                 logging.debug(">10")
 
             return True
-        except RuntimeError:
+        except RuntimeError or IndexError:
             logging.error("Failed to check online status")
             return False
 
