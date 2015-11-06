@@ -23,13 +23,16 @@ class ComDevice(threading.Thread):
         self.max_altitude = 0
 
         self.online = False
-        
-        self.sim.send_command("AT+CGATT?")
-        self.sim.send_command("AT+CGATT=1")
-        self.sim.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
-        self.sim.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
-        self.sim.send_command("AT+SAPBR=1,1")
-        self.sim.send_command("AT+HTTPINIT")
+
+        try:
+            self.sim.send_command("AT+CGATT?")
+            self.sim.send_command("AT+CGATT=1")
+            self.sim.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
+            self.sim.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
+            self.sim.send_command("AT+SAPBR=1,1")
+            self.sim.send_command("AT+HTTPINIT")
+        except RuntimeError:
+            logging.error("Failed to init ComDevice")
 
     def send_images(self):
         list = os.listdir("data/send")
@@ -93,8 +96,11 @@ class ComDevice(threading.Thread):
 
         i = 0
         while self.running:
-            self.check_incoming_queue()
-            self.check_incoming_sms()
+            try:
+                self.check_incoming_queue()
+                self.check_incoming_sms()
+            except RuntimeError:
+                logging.exception("Failed to read incoming sms or queue")
 
             if i == 0 and self.mode == "MODE 1" \
                     or self.mode == "MODE 2" \
@@ -149,8 +155,10 @@ class ComDevice(threading.Thread):
         str_lon = str(position.get_longitude())
         str_alt = str(position.get_altitude())
 
-
-        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
-        self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+        try:
+            self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
+            self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+        except RuntimeError:
+            logging.exception("Failed to send commands.")
 
         logging.info("done")
