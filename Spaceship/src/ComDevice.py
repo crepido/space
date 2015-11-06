@@ -45,6 +45,7 @@ class ComDevice(threading.Thread):
         sms = self.sim.read_one_sms()
         if sms is not None:
             cmd = sms[1].upper()
+            logging.info("Received SMS "+cmd)
 
             if cmd == "START" \
                     or cmd == "MODE 1" \
