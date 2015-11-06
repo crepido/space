@@ -96,7 +96,7 @@ class ComDevice(threading.Thread):
             self.check_incoming_queue()
             self.check_incoming_sms()
 
-            if self.mode == "MODE 1" \
+            if i == 0 and self.mode == "MODE 1" \
                     or self.mode == "MODE 2" \
                     or self.mode == "MODE 3" \
                     or self.mode == "MODE 4" \
@@ -116,7 +116,10 @@ class ComDevice(threading.Thread):
 
             time.sleep(1)
 
-            i += 10
+            i += 1
+
+            if i > 10:
+                i = 0
 
             # if i == 100:
             #     # Mode 3, Ballong har brustit och vi faller
