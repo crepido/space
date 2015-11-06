@@ -99,21 +99,27 @@ class ComDevice(threading.Thread):
             except RuntimeError:
                 logging.exception("Failed to read incoming sms or queue")
 
-            if i == 0 and self.mode == "MODE 1" \
-                    or self.mode == "MODE 2" \
-                    or self.mode == "MODE 3" \
-                    or self.mode == "MODE 4" \
-                    or self.mode == "MODE 5":
-
+            # Each 10 sec
+            if i % 10 == 0:
                 position = self.sim.get_gps_position()
-                self.send_gps_position(position)
 
                 # Save max altitude
                 if position.get_altitude() > self.max_altitude:
                     self.max_altitude = position.get_altitude()
 
+                if self.mode == "MODE 1":
+                    self.send_gps_position(position)
+                elif self.mode == "MODE 4":
+                    self.send_gps_position(position)
+
+            # Each minute
+            if i == 0:
+                position = self.sim.get_gps_position()
+
                 if self.mode == "MODE 3":
                     altitude = position.get_altitude()
+                elif self.mode == "MODE 5":
+                    self.send_gps_position(position)
 
             self.check_online()
 
@@ -121,7 +127,7 @@ class ComDevice(threading.Thread):
 
             i += 1
 
-            if i > 10:
+            if i >= 60:
                 i = 0
 
             # if i == 100:
