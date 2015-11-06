@@ -5,11 +5,12 @@ from src.ComDevice import ComDevice
 
 import time
 import Queue
+import logging
 
 
 class Spaceship:
     def __init__(self):
-        print("Starting Spaceship")
+        logging.info("Starting Spaceship")
         self.q_mode_camera = Queue.Queue()
         self.q_com_device_in = Queue.Queue()
         self.q_com_device_out = Queue.Queue()
@@ -19,15 +20,15 @@ class Spaceship:
         self.running = True
 
     def set_mode(self, mode):
-        print("Setting mode "+mode)
+        logging.info("Setting mode "+mode)
         self.q_mode_camera.put(mode)
         self.q_com_device_in.put(mode)
 
     def shutdown(self):
         self.running = False
         self.set_mode("EXIT")
-        print("All shut down")
-        print("Shutdown Spaceship")
+        logging.info("All shut down")
+        logging.info("Shutdown Spaceship")
 
     def check_queue(self):
         try:
@@ -45,7 +46,8 @@ class Spaceship:
             None
 
     def run(self):
-
+        logging.basicConfig(filename='space.log', level=logging.INFO)
+        logging.info('Started')
         self.com_device.start()
         self.camera.start()
 
@@ -56,7 +58,8 @@ class Spaceship:
 
         except KeyboardInterrupt:
             self.shutdown()
+        logging.info('Finished')
 
-
-space = Spaceship()
-space.run()
+if __name__ == '__main__':
+    space = Spaceship()
+    space.run()

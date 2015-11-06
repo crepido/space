@@ -2,13 +2,13 @@ __author__ = 'tobias'
 
 import time
 import serial
+import logging
 
 
 class Position:
     def __init__(self, gps_data_str):
         gps_data_list = gps_data_str[1].split(",")
-        print(gps_data_list)
-
+        logging.debug(gps_data_list)
         lat = gps_data_list[1]
         lon = gps_data_list[2]
 
@@ -49,6 +49,7 @@ class Position:
 class Sim908:
 
     def __init__(self, debug):
+        logging.debug("init Sim908")
         self.debug = debug
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
@@ -92,14 +93,14 @@ class Sim908:
                 msg = sms_list[x+1]
 
                 if self.debug:
-                    print("SMS "+str(x)+":"+msg)
+                    logging.debug("SMS "+str(x)+":"+msg)
 
                 index = int(sms_list[x].split(",")[0].split(":")[1])
                 # Delete
                 self.send_command("AT+CMGD="+str(index))
 
                 msisdn = str(ctr.split(",")[2].replace("\"", ""))
-                print("MSISDN: " + msisdn)
+                logging.debug("MSISDN: " + msisdn)
                 return [msisdn, msg]
 
     def send_command(self, com, expected_result=["OK", "ERROR"]):
@@ -119,11 +120,10 @@ class Sim908:
 
             i += 1
             if i > 10:
-                print(ret)
+                logging(ret)
                 raise RuntimeError("Expected result")
 
-        if self.debug:
-            print(ret)
+        logging.debug(ret)
 
         return ret
 
@@ -144,11 +144,10 @@ class Sim908:
 
             i += 1
             if i > 10:
-                print(ret)
+                logging.error(ret)
                 raise RuntimeError("Expected result")
 
-        if self.debug:
-            print(ret)
+        logging.debug(ret)
 
         return ret
 
@@ -174,11 +173,11 @@ class Sim908:
         res = self.send_command("AT+CSQ")
         signal = int(res[1].split(":")[1].split(",")[0])
 
-        print("Signal level: "+str(signal))
+        logging.debug("Signal level: "+str(signal))
         if signal == 99:
-            print("no connection")
+            logging.debug("no connection")
             return False
         if signal > 10:
-            print(">10")
+            logging.debug(">10")
 
         return True

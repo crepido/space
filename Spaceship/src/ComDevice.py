@@ -5,6 +5,7 @@ import time
 import Queue
 import os
 import subprocess
+import logging
 
 from sim908 import Sim908
 
@@ -34,7 +35,7 @@ class ComDevice(threading.Thread):
         list = os.listdir("data/send")
         if len(list) > 0:
             for item in list:
-                print("Processing " + item)
+                logging.info("Processing " + item)
                 os.remove("data/send/" + item)
 
     def check_incoming_sms(self):
@@ -59,7 +60,7 @@ class ComDevice(threading.Thread):
                 self.sim.send_sms(sms[0], msg)
 
     def change_mode(self, msg):
-        print("Com: " + msg)
+        logging.debug("Com: " + msg)
         self.mode = msg
 
     def check_incoming_queue(self):
@@ -73,7 +74,7 @@ class ComDevice(threading.Thread):
                     or msg == "START":
                 self.change_mode(msg)
             elif msg == "STOP" or msg == "EXIT":
-                print("Com: Got exit")
+                logging.info("Com: Got exit")
                 self.running = False
 
         except Queue.Empty:
@@ -88,7 +89,7 @@ class ComDevice(threading.Thread):
             self.online_action()
 
     def run(self):
-        print("Starting ComDevice")
+        logging.info("Starting ComDevice")
 
         i = 0
         while self.running:
@@ -126,23 +127,20 @@ class ComDevice(threading.Thread):
             if self.mode == "Mode 1" or self.mode == "Mode 4":
                 self.send_images()
 
-        print("Stopping ComDevice")
+        logging.info("Stopping ComDevice")
 
     def online_action(self):
-        print("Now "+str(self.online))
+        logging.info("Now online: "+str(self.online))
 
     def send_gps_position(self, position):
-        print("Sending gps position...")
-        print("Latitude: %f" % position.get_latitude())
-        print("Longitude: %f" % position.get_longitude())
+        logging.info("Latitude: %f" % position.get_latitude())
+        logging.info("Longitude: %f" % position.get_longitude())
         
         str_lat = str(position.get_latitude())
         str_lon = str(position.get_longitude())
         str_alt = str(position.get_altitude())
 
-
         self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"\"")
         self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
 
-
-        print("done")
+        logging.info("done")
