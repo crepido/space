@@ -82,6 +82,9 @@ class Sim908:
         try:
             gps = self.send_command("AT+CGPSINF=0")
             pos = Position(gps)
+
+            if pos.get_latitude() == 0.0:
+                self.start_gps()
             return pos
         except RuntimeError:
             logging.exception("Failed to get gps position")
