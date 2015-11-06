@@ -120,7 +120,7 @@ class Sim908:
 
             i += 1
             if i > 10:
-                logging(ret)
+                logging.error(ret)
                 raise RuntimeError("Expected result")
 
         logging.debug(ret)
