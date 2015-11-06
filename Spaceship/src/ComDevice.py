@@ -140,7 +140,8 @@ class ComDevice(threading.Thread):
         str_lon = str(position.get_longitude())
         str_alt = str(position.get_altitude())
 
-        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"\"")
+
+        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
         self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
 
         logging.info("done")
