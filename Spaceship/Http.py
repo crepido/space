@@ -18,4 +18,4 @@ sim.send_command("AT+HTTPREAD")
 
 
 
-logging("done")
+logging.debug("done")

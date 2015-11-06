@@ -46,7 +46,7 @@ class Spaceship:
             None
 
     def run(self):
-        logging.basicConfig(filename='space.log', level=logging.INFO)
+
         logging.info('Started')
         self.com_device.start()
         self.camera.start()
@@ -61,5 +61,6 @@ class Spaceship:
         logging.info('Finished')
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='space.log', level=logging.INFO)
     space = Spaceship()
     space.run()
