@@ -7,16 +7,17 @@ import logging
 
 class Position:
     def __init__(self, gps_data_str):
-        gps_data_list = gps_data_str[1].split(",")
-        logging.debug(gps_data_list)
-        lat = gps_data_list[1]
-        lon = gps_data_list[2]
+        if gps_data_str != "":
+            gps_data_list = gps_data_str[1].split(",")
+            logging.debug(gps_data_list)
+            lat = gps_data_list[1]
+            lon = gps_data_list[2]
 
-        self.longitude = Position.convert(lon)
-        self.latitude = Position.convert(lat)
-        self.altitude = gps_data_list[3]
-        self.speed = gps_data_list[7]
-        self.course = gps_data_list[8]
+            self.longitude = Position.convert(lon)
+            self.latitude = Position.convert(lat)
+            self.altitude = gps_data_list[3]
+            self.speed = gps_data_list[7]
+            self.course = gps_data_list[8]
 
     @staticmethod
     def convert(string):
@@ -62,9 +63,13 @@ class Sim908:
         self.send_command("AT")
 
     def get_gps_position(self):
-        gps = self.send_command("AT+CGPSINF=0")
-        pos = Position(gps)
-        return pos
+        try:
+            gps = self.send_command("AT+CGPSINF=0")
+            pos = Position(gps)
+            return pos
+        except RuntimeError:
+            logging.exception("Failed to get gps position")
+            return Position("")
 
     def gps_power_on(self):
         self.send_command("AT+CGPSPWR=1")
@@ -170,14 +175,18 @@ class Sim908:
         return True
 
     def is_online(self):
-        res = self.send_command("AT+CSQ")
-        signal = int(res[1].split(":")[1].split(",")[0])
+        try:
+            res = self.send_command("AT+CSQ")
+            signal = int(res[1].split(":")[1].split(",")[0])
 
-        logging.debug("Signal level: "+str(signal))
-        if signal == 99:
-            logging.debug("no connection")
+            logging.debug("Signal level: "+str(signal))
+            if signal == 99:
+                logging.debug("no connection")
+                return False
+            if signal > 10:
+                logging.debug(">10")
+
+            return True
+        except RuntimeError:
+            logging.error("Failed to check online status")
             return False
-        if signal > 10:
-            logging.debug(">10")
-
-        return True
