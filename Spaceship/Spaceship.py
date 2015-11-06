@@ -25,6 +25,7 @@ class Spaceship:
         self.q_com_device_in.put(mode)
 
     def shutdown(self):
+        print("Shutting down...")
         self.running = False
         self.set_mode("EXIT")
         logging.info("All shut down")
