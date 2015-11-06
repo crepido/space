@@ -152,7 +152,7 @@ class Camera(threading.Thread):
         filename_low = "data/low-"+filename
         filename_high = "data/high-"+filename
 
-        logging.debug("take_picture "+self.camera_position+", filename"+filename_low)
+        logging.info("take_picture "+self.camera_position+", filename"+filename_low)
         os.system("raspistill -n -h 300 -w 533 -o "+filename_low)
         os.system("raspistill -n -o "+filename_high)
 
