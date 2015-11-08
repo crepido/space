@@ -45,6 +45,8 @@ class Spaceship:
                 self.shutdown()
         except Queue.Empty:
             None
+        finally:
+            pass
 
     def run(self):
 
@@ -59,6 +61,8 @@ class Spaceship:
 
         except KeyboardInterrupt:
             self.shutdown()
+        finally:
+            pass
         logging.info('Finished')
 
 if __name__ == '__main__':

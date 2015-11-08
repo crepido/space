@@ -82,6 +82,8 @@ class ComDevice(threading.Thread):
 
         except Queue.Empty:
             None
+        finally:
+            pass
 
     def check_online(self):
         if not self.online and self.sim.is_online():
@@ -101,6 +103,8 @@ class ComDevice(threading.Thread):
                 self.check_incoming_sms()
             except RuntimeError:
                 logging.exception("Failed to read incoming sms or queue")
+            finally:
+                pass
 
             self.check_online()
 
@@ -174,3 +178,5 @@ class ComDevice(threading.Thread):
         except RuntimeError:
             logging.exception("Failed to send commands.")
             self.sim.start_http()
+        finally:
+            pass

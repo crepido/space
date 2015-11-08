@@ -48,6 +48,8 @@ class Camera(threading.Thread):
 
         except Queue.Empty:
             None
+        finally:
+            pass
 
     def change_mode(self, msg):
         self.mode = msg

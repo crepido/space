@@ -215,4 +215,6 @@ class Sim908:
         except RuntimeError or IndexError:
             logging.error("Failed to check online status")
             return False
+        finally:
+            pass
 
