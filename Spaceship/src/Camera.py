@@ -121,6 +121,12 @@ class Camera(threading.Thread):
             time.sleep(1)
 
     def run_mode_3(self, i):
+        if i == 0 or i == 30:
+            self.take_picture()
+            if self.camera_position == "vertical":
+                self.position_camera("horizontal")
+            else:
+                self.position_camera("vertical")
         time.sleep(1)
 
     def run_mode_4(self, i):

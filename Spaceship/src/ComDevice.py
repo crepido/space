@@ -57,8 +57,8 @@ class ComDevice(threading.Thread):
                 msg = str(position.get_longitude()) + " " + str(position.get_latitude())
                 self.sim.send_sms(sms[0], msg)
             elif cmd == "SHUTDOWN":
-                os.system("shutdown -h 1")
-                self.sim.send_sms(sms[0], "System shutdown initiated in 1 minute")
+                os.system("shutdown -h now")
+                self.sim.send_sms(sms[0], "System shutdown initiated")
             else:
                 self.sim.send_sms(sms[0], "Error")
 
