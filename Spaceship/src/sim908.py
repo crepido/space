@@ -60,12 +60,16 @@ class Sim908:
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
         self.ser.open()
+        self.gps_init_count = 0
 
     def start_gps(self):
         try:
             self.send_command("AT+CGPSPWR=1")
             self.send_command("AT+CGPSRST=1")
             self.send_command("AT")
+            self.gps_init_count += 1
+            if self.gps_init_count > 5:
+                self.gps_init_count = 0
             return True
         except RuntimeError:
             logging.exception("Failed to init gps")
@@ -89,7 +93,7 @@ class Sim908:
             gps = self.send_command("AT+CGPSINF=0")
             pos = Position(gps)
 
-            if pos.get_latitude() == 0.0:
+            if pos.get_latitude() == 0.0 and self.gps_init_count == 0:
                 self.start_gps()
             return pos
         except RuntimeError:
