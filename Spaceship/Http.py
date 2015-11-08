@@ -1,7 +1,7 @@
 __author__ = 'tobias'
 
 import src.sim908
-import time
+import logging
 
 
 sim = src.sim908.Sim908(True)
@@ -18,4 +18,4 @@ sim.send_command("AT+HTTPREAD")
 
 
 
-print("done")
+logging.debug("done")

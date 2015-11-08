@@ -5,6 +5,7 @@ import time
 import threading
 import Queue
 import os
+import logging
 
 
 class Camera(threading.Thread):
@@ -39,10 +40,10 @@ class Camera(threading.Thread):
                     or msg == "MODE 5" \
                     or msg == "START":
 
-                print("Cam: "+msg)
+                logging.info("Cam: "+msg)
                 self.change_mode(msg)
             elif msg == "STOP" or msg == "EXIT":
-                print("Cam: Got exit")
+                logging.info("Cam: Got exit")
                 self._running = False
 
         except Queue.Empty:
@@ -52,10 +53,10 @@ class Camera(threading.Thread):
         self.mode = msg
 
         if msg == "MODE 3":
-            print("Falling")
+            logging.info("Falling")
 
     def run(self):
-        print "Starting Camera"
+        logging.info("Starting Camera")
 
         i = 0
         t1 = 0
@@ -84,10 +85,10 @@ class Camera(threading.Thread):
                 i = 0
                 t2 = time.time()
                 t = t2 - t1
-                print("time: "+str(t))
+                logging.debug("time: "+str(t))
 
         GPIO.cleanup()
-        print("Stopping camera")
+        logging.info("Stopping camera")
 
     def run_mode_1(self, i):
         if i % 10 == 0:
@@ -129,15 +130,15 @@ class Camera(threading.Thread):
         time.sleep(1)
 
     def position_camera(self, position):
-        print("position camera "+self.camera_position+">"+position)
+        logging.debug("position camera "+self.camera_position+">"+position)
 
         GPIO.output(13, GPIO.HIGH)
         time.sleep(0.5)
         if position == "vertical":
-            print("change duty cycle 10.5")
+            logging.debug("change duty cycle 10.5")
             self.pwm.ChangeDutyCycle(10.5)
         elif position == "horizontal":
-            print("change duty cycle 5.5")
+            logging.debug("change duty cycle 5.5")
             self.pwm.ChangeDutyCycle(5.5)
         time.sleep(0.5)
         GPIO.output(13, GPIO.LOW)
@@ -151,16 +152,18 @@ class Camera(threading.Thread):
         filename_low = "data/low-"+filename
         filename_high = "data/high-"+filename
 
-        print("take_picture "+self.camera_position+", filename"+filename_low)
-        os.system("raspistill -h 300 -w 533 -o "+filename_low)
-        os.system("raspistill -o "+filename_high)
+        logging.info("take_picture "+self.camera_position+", filename"+filename_low)
+        os.system("raspistill -n -h 300 -w 533 -o "+filename_low)
+        os.system("raspistill -n -o "+filename_high)
 
         return filename_low
 
     def movie10s(self):
-        print("10 sek movie "+self.camera_position)
+        logging.debug("10 sek movie "+self.camera_position)
+        filename = str(time.time())+".h264"
+
         time.sleep(10)
 
     def send_picture(self, filename):
-        print("send picture "+filename)
+        logging.debug("send picture "+filename)
         os.system("mv "+filename+" data/send")

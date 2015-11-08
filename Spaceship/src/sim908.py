@@ -2,21 +2,28 @@ __author__ = 'tobias'
 
 import time
 import serial
+import logging
 
 
 class Position:
     def __init__(self, gps_data_str):
-        gps_data_list = gps_data_str[1].split(",")
-        print(gps_data_list)
+        if gps_data_str != "":
+            gps_data_list = gps_data_str[1].split(",")
+            logging.debug(gps_data_list)
+            lat = gps_data_list[1]
+            lon = gps_data_list[2]
 
-        lat = gps_data_list[1]
-        lon = gps_data_list[2]
-
-        self.longitude = Position.convert(lon)
-        self.latitude = Position.convert(lat)
-        self.altitude = gps_data_list[3]
-        self.speed = gps_data_list[7]
-        self.course = gps_data_list[8]
+            self.longitude = Position.convert(lon)
+            self.latitude = Position.convert(lat)
+            self.altitude = float(gps_data_list[3])
+            self.speed = gps_data_list[7]
+            self.course = gps_data_list[8]
+        else:
+            self.longitude = 0.0
+            self.latitude = 0.0
+            self.altitude = 0.0
+            self.speed = 0.0
+            self.course = 0.0
 
     @staticmethod
     def convert(string):
@@ -48,22 +55,47 @@ class Position:
 
 class Sim908:
 
-    def __init__(self, debug):
-        self.debug = debug
+    def __init__(self):
+        logging.debug("init Sim908")
         self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, timeout=1)
         self.ser.close()
         self.ser.open()
-        self.start_gps()
 
     def start_gps(self):
-        self.send_command("AT+CGPSPWR=1")
-        self.send_command("AT+CGPSRST=1")
-        self.send_command("AT")
+        try:
+            self.send_command("AT+CGPSPWR=1")
+            self.send_command("AT+CGPSRST=1")
+            self.send_command("AT")
+            return True
+        except RuntimeError:
+            logging.exception("Failed to init gps")
+            return False
+
+    def start_http(self):
+        try:
+            self.send_command("AT+CGATT?")
+            self.send_command("AT+CGATT=1")
+            self.send_command("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"")
+            self.send_command("AT+SAPBR=3,1,\"APN\",\"online.telia.se\"")
+            self.send_command("AT+SAPBR=1,1")
+            self.send_command("AT+HTTPINIT")
+            return True
+        except RuntimeError:
+            logging.error("Failed to init ComDevice")
+            return False
 
     def get_gps_position(self):
-        gps = self.send_command("AT+CGPSINF=0")
-        pos = Position(gps)
-        return pos
+        try:
+            gps = self.send_command("AT+CGPSINF=0")
+            pos = Position(gps)
+
+            if pos.get_latitude() == 0.0:
+                self.start_gps()
+            return pos
+        except RuntimeError:
+            logging.exception("Failed to get gps position")
+            self.start_gps()
+            return Position("")
 
     def gps_power_on(self):
         self.send_command("AT+CGPSPWR=1")
@@ -91,15 +123,14 @@ class Sim908:
                 ctr = sms_list[x]
                 msg = sms_list[x+1]
 
-                if self.debug:
-                    print("SMS "+str(x)+":"+msg)
+                logging.debug("SMS "+str(x)+":"+msg)
 
                 index = int(sms_list[x].split(",")[0].split(":")[1])
                 # Delete
                 self.send_command("AT+CMGD="+str(index))
 
                 msisdn = str(ctr.split(",")[2].replace("\"", ""))
-                print("MSISDN: " + msisdn)
+                logging.debug("MSISDN: " + msisdn)
                 return [msisdn, msg]
 
     def send_command(self, com, expected_result=["OK", "ERROR"]):
@@ -119,11 +150,10 @@ class Sim908:
 
             i += 1
             if i > 10:
-                print(ret)
+                logging.error(ret)
                 raise RuntimeError("Expected result")
 
-        if self.debug:
-            print(ret)
+        logging.debug(ret)
 
         return ret
 
@@ -144,11 +174,10 @@ class Sim908:
 
             i += 1
             if i > 10:
-                print(ret)
+                logging.error(ret)
                 raise RuntimeError("Expected result")
 
-        if self.debug:
-            print(ret)
+        logging.debug(ret)
 
         return ret
 
@@ -171,14 +200,19 @@ class Sim908:
         return True
 
     def is_online(self):
-        res = self.send_command("AT+CSQ")
-        signal = int(res[1].split(":")[1].split(",")[0])
+        try:
+            res = self.send_command("AT+CSQ")
+            signal = int(res[1].split(":")[1].split(",")[0])
 
-        print("Signal level: "+str(signal))
-        if signal == 99:
-            print("no connection")
+            logging.debug("Signal level: "+str(signal))
+            if signal == 99:
+                logging.debug("no connection")
+                return False
+            if signal > 10:
+                logging.debug(">10")
+
+            return True
+        except RuntimeError or IndexError:
+            logging.error("Failed to check online status")
             return False
-        if signal > 10:
-            print(">10")
 
-        return True
