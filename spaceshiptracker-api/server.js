@@ -2,19 +2,24 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var cors   = require('cors');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Must be used for cross domain ajaxs calls.
+// Adds access-control-allow-origin:*
+app.use(cors());
+
+// Sets upp use of env variable or uses localhsot if not set
 var dburl = process.env.dburl;
+mongoose.connect(dburl | 'mongodb://localhost:27017/spacetracker');
 
-mongoose.connect(dburl);
-
+// Data schema for REST input and persistance
 var Position = require('./models/position');
 
-var port = process.env.PORT || 8080;  
 
 var router = express.Router();   
 
@@ -31,6 +36,7 @@ router.get('/', function(req, res) {
 });
 
 router.route('/positions')
+    // POST handler for storing of positions
     .post(function(req, res) {
         
         var position = new Position();     
@@ -51,6 +57,7 @@ router.route('/positions')
         
     })
     
+    // Gets all positions for all ships
     .get(function(req, res) {
         Position.find(function(err, positions) {
             if (err)
@@ -60,6 +67,8 @@ router.route('/positions')
         });
     });
     
+// Gets all positions for specified ship
+// domain.com/api/poisitons/shipname
 router.route('/positions/:shipname')
 
     // get the bear with that id (accessed at GET http://localhost:8080/api/bears/:bear_id)
@@ -77,32 +86,8 @@ router.route('/positions/:shipname')
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
-// START THE SERVER
-// =============================================================================
+// Starts the server on env variable PORT or 8080 if missing
+var port = process.env.PORT || 8080;  
 app.listen(port);
-console.log('Magic happens on port ' + port);
 
-function getDateTime() {
-
-    var date = new Date();
-
-    var hour = date.getHours();
-    hour = (hour < 10 ? "0" : "") + hour;
-
-    var min  = date.getMinutes();
-    min = (min < 10 ? "0" : "") + min;
-
-    var sec  = date.getSeconds();
-    sec = (sec < 10 ? "0" : "") + sec;
-
-    var year = date.getFullYear();
-
-    var month = date.getMonth() + 1;
-    month = (month < 10 ? "0" : "") + month;
-
-    var day  = date.getDate();
-    day = (day < 10 ? "0" : "") + day;
-
-    return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
-
-}
+console.log('Server is started on port ' + port);
