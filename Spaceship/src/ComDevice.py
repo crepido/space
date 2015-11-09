@@ -18,7 +18,7 @@ class ComDevice(threading.Thread):
         self.sim = Sim908()
         self.q_com_device_in = q_com_device_in
         self.q_com_device_out = q_com_device_out
-        self.mode = "Mode 1"
+        self.mode = "Mode 0"
         self.running = True
         self.max_altitude = 0
 
@@ -109,23 +109,18 @@ class ComDevice(threading.Thread):
                 if position.get_altitude() > self.max_altitude:
                     self.max_altitude = position.get_altitude()
 
-                if self.online:
+                if (self.mode == "Mode 1" or self.mode == "Mode 2") and self.online:
                     self.send_gps_position(position)
+
+                # Each minute
+                if self.mode == "Mode 3" and i == 0:
+                    self.send_gps_position(position)
+
+                if self.online:
                     self.send_images()
 
-            # Each minute
-            if i == 0:
-                position = self.sim.get_gps_position()
-
-                if self.mode == "MODE 2":
-                    altitude = position.get_altitude()
-                elif self.mode == "MODE 3":
-                    self.send_gps_position(position)
-
             time.sleep(1)
-
             i += 1
-
             if i >= 60:
                 i = 0
 
