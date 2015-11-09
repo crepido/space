@@ -66,6 +66,6 @@ class Spaceship:
         logging.info('Finished')
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/pi/space.log', format='%(asctime)s %(levelname)s : %(name)s : %(message)s', level=logging.INFO)
+    logging.basicConfig(filename='/home/pi/space.log', format='%(asctime)s %(levelname)s : %(name)s : %(message)s', level=logging.DEBUG)
     space = Spaceship()
     space.run()
