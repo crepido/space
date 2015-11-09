@@ -21,7 +21,9 @@ class Position:
                 self.speed = gps_data_list[7]
                 self.course = gps_data_list[8]
             except Exception:
-                logging.exception("Could not parse gps string data "+gps_data_str)
+                for item in gps_data_str:
+                    logging.error(item)
+                logging.exception("Could not parse gps string data ")
                 self.init_empty()
         else:
             self.init_empty()
@@ -217,14 +219,14 @@ class Sim908:
             signal = int(res[1].split(":")[1].split(",")[0])
 
             logging.debug("Signal level: "+str(signal))
-            if signal == 99:
+            if signal == 99 or signal <= 2:
                 logging.debug("no connection")
                 return False
             if signal > 10:
                 logging.debug(">10")
 
             return True
-        except RuntimeError or IndexError:
+        except (RuntimeError, IndexError, ValueError):
             logging.error("Failed to check online status")
             return False
         finally:
