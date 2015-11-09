@@ -15,7 +15,7 @@ app.use(cors());
 
 // Sets upp use of env variable or uses localhsot if not set
 var dburl = process.env.dburl;
-mongoose.connect(dburl | 'mongodb://localhost:27017/spacetracker');
+mongoose.connect(dburl | 'mongodb://mongo:27017/spacetracker');
 
 // Data schema for REST input and persistance
 var Position = require('./models/position');
