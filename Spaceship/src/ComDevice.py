@@ -92,10 +92,20 @@ class ComDevice(threading.Thread):
             self.online = online
             self.online_action()
 
+    def is_falling(self, altitude):
+        falling = True
+        last = self.max_altitude
+        for item in altitude:
+            logging.debug(item)
+            if item >= last:
+                falling = False
+        return falling
+
     def run(self):
         logging.info("Starting ComDevice")
 
         i = 0
+        altitude = []
         while self.running:
             self.check_incoming_queue()
 
@@ -108,6 +118,13 @@ class ComDevice(threading.Thread):
                 # Save max altitude
                 if position.get_altitude() > self.max_altitude:
                     self.max_altitude = position.get_altitude()
+
+                altitude.insert(0, position.get_altitude())
+                if len(altitude) > 6:
+                    altitude.pop()
+
+                if self.is_falling(altitude):
+                    self.q_com_device_out.put("MODE 2")
 
                 if self.mode == "MODE 1" or self.mode == "MODE 2":
                     self.send_gps_position(position)
