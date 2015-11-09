@@ -4,6 +4,10 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var cors   = require('cors');
 
+var http = require('http').Server(app);
+
+var io = require('socket.io')(http);
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,7 +15,14 @@ app.use(bodyParser.json());
 
 // Must be used for cross domain ajaxs calls.
 // Adds access-control-allow-origin:*
-app.use(cors());
+var corsOptions = {
+  origin: 'http://crepidoinspace-johancn87.c9users.io:8081',
+  credentials : true
+};
+app.use(cors(corsOptions));
+
+//crepidoinspace-johancn87.c9users.io:*
+//io.set( 'origins', 'http://crepidoinspace-johancn87.c9users.io:8081' );
 
 // Sets upp use of env variable or uses localhsot if not set
 var dburl = process.env.dburl;
@@ -52,7 +63,12 @@ router.route('/positions')
             
             console.log(position);
             console.log("Position stored in db");
+            console.log("Broadcasting");
+            io.emit('Position_stored', position);
+            
             res.json({ message: 'Position stored!' });
+            
+            
         });
         
     })
@@ -82,12 +98,26 @@ router.route('/positions/:shipname')
 
 
 
+
+//Socker handling
+io.on('connection', function(socket){
+  console.log('a user connected');
+  
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  
+});
+
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
 // Starts the server on env variable PORT or 8080 if missing
 var port = process.env.PORT || 8080;  
-app.listen(port);
+
+
+http.listen(app.get('port'));
 
 console.log('Server is started on port ' + port);
