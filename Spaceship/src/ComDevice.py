@@ -86,10 +86,11 @@ class ComDevice(threading.Thread):
             pass
 
     def check_online(self):
-        if not self.online and self.sim.is_online():
+        online = self.sim.is_online()
+        if not self.online and online:
             self.online = True
             self.online_action()
-        if self.online and not self.sim.is_online():
+        if self.online and not online:
             self.online = False
             self.online_action()
 

@@ -217,7 +217,7 @@ class Sim908:
             signal = int(res[1].split(":")[1].split(",")[0])
 
             logging.debug("Signal level: "+str(signal))
-            if signal == 99:
+            if signal == 99 or signal <= 2:
                 logging.debug("no connection")
                 return False
             if signal > 10:
