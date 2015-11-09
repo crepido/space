@@ -99,6 +99,7 @@ class ComDevice(threading.Thread):
             logging.debug(item)
             if item >= last:
                 falling = False
+            last = item
         return falling
 
     def run(self):
