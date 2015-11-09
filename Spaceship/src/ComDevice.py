@@ -169,7 +169,9 @@ class ComDevice(threading.Thread):
         str_alt = str(position.get_altitude())
 
         try:
-            if self.online:
+            if position.get_latitude() != 0.0:
+                logging.info("Ingen position")
+            elif self.online:
                 self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
                 self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
                 logging.info("Skickat gps")
