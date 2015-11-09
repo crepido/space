@@ -35,32 +35,35 @@ class ComDevice(threading.Thread):
                 os.remove("data/send/" + item)
 
     def check_incoming_sms(self):
-        sms = self.sim.read_one_sms()
-        if sms is not None:
-            cmd = sms[1].upper()
-            logging.info("Received SMS "+cmd)
+        try:
+            sms = self.sim.read_one_sms()
+            if sms is not None:
+                cmd = sms[1].upper()
+                logging.info("Received SMS "+cmd)
 
-            if cmd == "START" \
-                    or cmd == "MODE 1" \
-                    or cmd == "MODE 2" \
-                    or cmd == "MODE 3" \
-                    or cmd == "MODE 4" \
-                    or cmd == "MODE 5" \
-                    or cmd == "EXIT":
-                self.q_com_device_out.put(cmd)
-                self.sim.send_sms(sms[0], "OK")
-            elif cmd == "IP":
-                res = subprocess.check_output("ifconfig | grep eth0 -A 2 | grep \"inet addr\"", shell=True)
-                self.sim.send_sms(sms[0], res)
-            elif cmd == "POS":
-                position = self.sim.get_gps_position()
-                msg = str(position.get_longitude()) + " " + str(position.get_latitude())
-                self.sim.send_sms(sms[0], msg)
-            elif cmd == "SHUTDOWN":
-                os.system("shutdown -h now")
-                self.sim.send_sms(sms[0], "System shutdown initiated")
-            else:
-                self.sim.send_sms(sms[0], "Error")
+                if cmd == "START" \
+                        or cmd == "MODE 1" \
+                        or cmd == "MODE 2" \
+                        or cmd == "MODE 3" \
+                        or cmd == "EXIT":
+                    self.q_com_device_out.put(cmd)
+                    self.sim.send_sms(sms[0], "OK")
+                elif cmd == "IP":
+                    res = subprocess.check_output("ifconfig | grep eth0 -A 2 | grep \"inet addr\"", shell=True)
+                    self.sim.send_sms(sms[0], res)
+                elif cmd == "POS":
+                    position = self.sim.get_gps_position()
+                    msg = str(position.get_longitude()) + " " + str(position.get_latitude())
+                    self.sim.send_sms(sms[0], msg)
+                elif cmd == "SHUTDOWN":
+                    os.system("shutdown -h now")
+                    self.sim.send_sms(sms[0], "System shutdown initiated")
+                else:
+                    self.sim.send_sms(sms[0], "Error")
+        except RuntimeError:
+            logging.exception("Failed to read incoming sms or queue")
+        finally:
+            pass
 
     def change_mode(self, msg):
         logging.debug("Com: " + msg)
@@ -72,8 +75,6 @@ class ComDevice(threading.Thread):
             if msg == "MODE 1" \
                     or msg == "MODE 2" \
                     or msg == "MODE 3" \
-                    or msg == "MODE 4" \
-                    or msg == "MODE 5" \
                     or msg == "START":
                 self.change_mode(msg)
             elif msg == "STOP" or msg == "EXIT":
@@ -87,11 +88,8 @@ class ComDevice(threading.Thread):
 
     def check_online(self):
         online = self.sim.is_online()
-        if not self.online and online:
-            self.online = True
-            self.online_action()
-        if self.online and not online:
-            self.online = False
+        if self.online != online:
+            self.online = online
             self.online_action()
 
     def run(self):
@@ -99,36 +97,29 @@ class ComDevice(threading.Thread):
 
         i = 0
         while self.running:
-            try:
-                self.check_incoming_queue()
-                self.check_incoming_sms()
-            except RuntimeError:
-                logging.exception("Failed to read incoming sms or queue")
-            finally:
-                pass
-
-            self.check_online()
+            self.check_incoming_queue()
 
             # Each 10 sec
             if i % 10 == 0:
+                self.check_incoming_sms()
+                self.check_online()
                 position = self.sim.get_gps_position()
 
                 # Save max altitude
                 if position.get_altitude() > self.max_altitude:
                     self.max_altitude = position.get_altitude()
 
-                if self.mode == "MODE 1":
+                if self.online:
                     self.send_gps_position(position)
-                elif self.mode == "MODE 4":
-                    self.send_gps_position(position)
+                    self.send_images()
 
             # Each minute
             if i == 0:
                 position = self.sim.get_gps_position()
 
-                if self.mode == "MODE 3":
+                if self.mode == "MODE 2":
                     altitude = position.get_altitude()
-                elif self.mode == "MODE 5":
+                elif self.mode == "MODE 3":
                     self.send_gps_position(position)
 
             time.sleep(1)
@@ -138,25 +129,14 @@ class ComDevice(threading.Thread):
             if i >= 60:
                 i = 0
 
-            # if i == 100:
-            #     # Mode 3, Ballong har brustit och vi faller
-            #     self.q_com_device_out.put("Mode 3")
-            #
-            # if i == 200:
-            #     # Mode 4, GPRS Online, Faller vidare
-            #     self.q_com_device_out.put("Mode 4")
-            #
-            # if i == 300:
-            #     # Mode 5, Vi har landat
-            #     self.q_com_device_out.put("Mode 5")
-
-            if self.mode == "Mode 1" or self.mode == "Mode 4":
-                self.send_images()
-
         logging.info("Stopping ComDevice")
 
     def online_action(self):
         logging.info("Now online: "+str(self.online))
+        if self.online:
+            self.q_com_device_out.put("ONLINE")
+        else:
+            self.q_com_device_out.put("OFFLINE")
 
     def send_gps_position(self, position):
         logging.info("Latitude: %f" % position.get_latitude())

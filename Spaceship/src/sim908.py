@@ -218,12 +218,10 @@ class Sim908:
             res = self.send_command("AT+CSQ")
             signal = int(res[1].split(":")[1].split(",")[0])
 
-            logging.debug("Signal level: "+str(signal))
+            logging.debug("Signal level: "+str(signal)+" (0-31)")
             if signal == 99 or signal <= 2:
                 logging.debug("no connection")
                 return False
-            if signal > 10:
-                logging.debug(">10")
 
             return True
         except (RuntimeError, IndexError, ValueError):

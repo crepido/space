@@ -29,6 +29,7 @@ class Camera(threading.Thread):
 
         threading.Thread.__init__(self)
         self._running = True
+        self.online = False
 
     def check_messages(self):
         try:
@@ -36,12 +37,14 @@ class Camera(threading.Thread):
             if msg == "MODE 1" \
                     or msg == "MODE 2" \
                     or msg == "MODE 3" \
-                    or msg == "MODE 4" \
-                    or msg == "MODE 5" \
                     or msg == "START":
 
                 logging.info("Cam: "+msg)
                 self.change_mode(msg)
+            elif msg == "ONLINE":
+                self.online = True
+            elif msg == "OFFLINE":
+                self.online = False
             elif msg == "STOP" or msg == "EXIT":
                 logging.info("Cam: Got exit")
                 self._running = False
@@ -54,7 +57,7 @@ class Camera(threading.Thread):
     def change_mode(self, msg):
         self.mode = msg
 
-        if msg == "MODE 3":
+        if msg == "MODE 2":
             logging.info("Falling")
 
     def run(self):
@@ -69,16 +72,16 @@ class Camera(threading.Thread):
 
             self.check_messages()
 
-            if self.mode == "MODE 1":
-                self.run_mode_1(i)
-            if self.mode == "MODE 2":
-                self.run_mode_2(i)
+            if self.mode == "MODE 1" and self.online:
+                self.run_mode_1_online(i)
+            if self.mode == "MODE 1" and not self.online:
+                self.run_mode_1_offline(i)
+            if self.mode == "MODE 2" and not self.online:
+                self.run_mode_2_offline(i)
+            if self.mode == "MODE 2" and self.online:
+                self.run_mode_2_online(i)
             if self.mode == "MODE 3":
                 self.run_mode_3(i)
-            if self.mode == "MODE 4":
-                self.run_mode_4(i)
-            if self.mode == "MODE 5":
-                self.run_mode_5(i)
             else:
                 time.sleep(1)
 
@@ -92,7 +95,7 @@ class Camera(threading.Thread):
         GPIO.cleanup()
         logging.info("Stopping camera")
 
-    def run_mode_1(self, i):
+    def run_mode_1_online(self, i):
         if i % 10 == 0:
             self.movie10s()
             filename = self.take_picture()
@@ -106,7 +109,7 @@ class Camera(threading.Thread):
         else:
             None
 
-    def run_mode_2(self, i):
+    def run_mode_1_offline(self, i):
 
         if i == 0:
             self.movie10s()
@@ -122,7 +125,7 @@ class Camera(threading.Thread):
         else:
             time.sleep(1)
 
-    def run_mode_3(self, i):
+    def run_mode_2_offline(self, i):
         if i == 0 or i == 30:
             self.take_picture()
             if self.camera_position == "vertical":
@@ -131,10 +134,10 @@ class Camera(threading.Thread):
                 self.position_camera("vertical")
         time.sleep(1)
 
-    def run_mode_4(self, i):
+    def run_mode_2_online(self, i):
         time.sleep(1)
 
-    def run_mode_5(self, i):
+    def run_mode_3(self, i):
         time.sleep(1)
 
     def position_camera(self, position):

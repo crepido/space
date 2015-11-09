@@ -37,8 +37,8 @@ class Spaceship:
             if msg == "MODE 1" \
                     or msg == "MODE 2" \
                     or msg == "MODE 3" \
-                    or msg == "MODE 4" \
-                    or msg == "MODE 5" \
+                    or msg == "ONLINE" \
+                    or msg == "OFFLINE" \
                     or msg == "START":
                 self.set_mode(msg)
             elif msg == "EXIT":
