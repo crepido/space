@@ -21,7 +21,9 @@ class Position:
                 self.speed = gps_data_list[7]
                 self.course = gps_data_list[8]
             except Exception:
-                logging.exception("Could not parse gps string data "+gps_data_str)
+                for item in gps_data_str:
+                    logging.error(item)
+                logging.exception("Could not parse gps string data ")
                 self.init_empty()
         else:
             self.init_empty()
