@@ -109,11 +109,11 @@ class ComDevice(threading.Thread):
                 if position.get_altitude() > self.max_altitude:
                     self.max_altitude = position.get_altitude()
 
-                if (self.mode == "Mode 1" or self.mode == "Mode 2") and self.online:
+                if self.mode == "MODE 1" or self.mode == "MODE 2":
                     self.send_gps_position(position)
 
                 # Each minute
-                if self.mode == "Mode 3" and i == 0:
+                if self.mode == "MODE 3" and i == 0:
                     self.send_gps_position(position)
 
                 if self.online:
