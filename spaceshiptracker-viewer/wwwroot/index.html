@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Hello World!</title>
+    <script src="/js/cesium/Cesium.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js">
+            </script>
+
+    <style>
+      @import url(js/Cesium/Widgets/widgets.css);
+      #cesiumContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        overflow: hidden;
+        padding: 0;
+        font-family: sans-serif;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        height: 100%;
+      }
+    </style>
+  </head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+   
+
+    var jqxhr = $.ajax( "http://spaceshiptracker.glenngbg.c9users.io/api/positions/Ballon" )
+  .done(function(data) {
+ 
+      
+       var viewer = new Cesium.Viewer('cesiumContainer');
+       data = data.filter(function(item)
+        {
+            return item.lat != 0;
+        });
+      
+            var positions = $.map(data, function (item, i) {
+                
+                return Cesium.Cartesian3.fromDegrees(item.lat, item.lon, item.alt || i);
+            });
+            
+            
+            //var res = Cesium.Cartesian3.fromDegrees(57.677723, 11.944885, 100);
+            console.log(positions);
+            entity = viewer.entities.add({
+                id: "Main",
+                //polyline: {
+                //    positions: positions,
+                //    width: 2,
+                //    material: Cesium.Color.CYAN
+                //},
+                wall: {
+                    positions: positions,
+                    //material: { red: 0, green: 1, blue: 1, alpha: 0.5 },
+                    material: Cesium.Color.fromHsl(0.0, 1, 1, 0.5),
+                    outline: true,
+                    outlineColor: Cesium.Color.BLUE,
+                    outlineWidth: 2
+                }
+            });
+            viewer.zoomTo(viewer.entities);
+      
+  })
+  .fail(function() {
+    alert( "error" );
+  });
+    
+    
+      var entity;
+        var c = [
+            { lat: 57.677723, lang: 11.944885, height: 0 },
+            { lat: 57.777723, lang: 11.954885, height: 2000 },
+            { lat: 57.877723, lang: 11.994885, height: 5000 }
+        ];
+        var c2 = [
+            { lat: 57.977723, lang: 11.944885, height: 9000 },
+            { lat: 57.977723, lang: 11.944885, height: 12000 },
+            { lat: 57.977723, lang: 11.944885, height: 15000 },
+            { lat: 57.944014, lang: 12.532654, height: 20000 },
+            { lat: 58.153316, lang: 13.521423, height: 15000 },
+            { lat: 58.390197, lang: 13.845520, height: 0 }
+        ];
+
+   
+
+    
+  </script>
+</body>
+</html>
