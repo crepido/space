@@ -6,24 +6,32 @@ import logging
 
 
 class Position:
+
     def __init__(self, gps_data_str):
         if gps_data_str != "":
-            gps_data_list = gps_data_str[1].split(",")
-            logging.debug(gps_data_list)
-            lat = gps_data_list[1]
-            lon = gps_data_list[2]
+            try:
+                gps_data_list = gps_data_str[1].split(",")
+                logging.debug(gps_data_list)
+                lat = gps_data_list[1]
+                lon = gps_data_list[2]
 
-            self.longitude = Position.convert(lon)
-            self.latitude = Position.convert(lat)
-            self.altitude = float(gps_data_list[3])
-            self.speed = gps_data_list[7]
-            self.course = gps_data_list[8]
+                self.longitude = Position.convert(lon)
+                self.latitude = Position.convert(lat)
+                self.altitude = float(gps_data_list[3])
+                self.speed = gps_data_list[7]
+                self.course = gps_data_list[8]
+            except Exception:
+                logging.exception("Could not parse gps string data "+gps_data_str)
+                self.init_empty()
         else:
-            self.longitude = 0.0
-            self.latitude = 0.0
-            self.altitude = 0.0
-            self.speed = 0.0
-            self.course = 0.0
+            self.init_empty()
+
+    def init_empty(self):
+        self.longitude = 0.0
+        self.latitude = 0.0
+        self.altitude = 0.0
+        self.speed = 0.0
+        self.course = 0.0
 
     @staticmethod
     def convert(string):
