@@ -100,7 +100,7 @@ class ComDevice(threading.Thread):
             if item >= last:
                 falling = False
             last = item
-        return falling
+        return falling and len(altitude) == 6
 
     def run(self):
         logging.info("Starting ComDevice")
@@ -124,7 +124,7 @@ class ComDevice(threading.Thread):
                 if len(altitude) > 6:
                     altitude.pop()
 
-                if self.is_falling(altitude):
+                if self.mode == "MODE 1" and self.is_falling(altitude):
                     self.q_com_device_out.put("MODE 2")
 
                 if self.mode == "MODE 1" or self.mode == "MODE 2":
