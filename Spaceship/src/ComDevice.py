@@ -131,8 +131,6 @@ class ComDevice(threading.Thread):
                 elif self.mode == "MODE 5":
                     self.send_gps_position(position)
 
-
-
             time.sleep(1)
 
             i += 1
@@ -175,6 +173,8 @@ class ComDevice(threading.Thread):
             elif self.online:
                 self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/positions?lat="+str_lat+"&lon="+str_lon+"&alt="+str_alt+"&ship=Ballon\"")
                 self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+                self.sim.send_command("AT")
+                time.sleep(0.5)
                 logging.info("Skickat gps")
             else:
                 logging.info("Offline, skickar inte gps")
