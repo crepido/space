@@ -53,6 +53,7 @@ class Spaceship:
         logging.info("Setting mode "+mode)
         self.q_mode_camera.put(mode)
         self.q_com_device_in.put(mode)
+        self.mode = mode
 
     def shutdown(self):
         print("Shutting down...")
