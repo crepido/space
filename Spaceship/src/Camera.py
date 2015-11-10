@@ -166,8 +166,7 @@ class Camera(threading.Thread):
     def movie10s(self):
         logging.debug("10 sek movie "+self.camera_position)
         filename = str(time.time())+".h264"
-
-        time.sleep(10)
+        os.system("raspivid -n -t 10000 -o "+filename)
 
     def send_picture(self, filename):
         logging.debug("send picture "+filename)

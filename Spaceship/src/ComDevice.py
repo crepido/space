@@ -92,12 +92,13 @@ class ComDevice(threading.Thread):
             self.online = online
             self.online_action()
 
+    # Ensure 50 meters drop for each 10 sec measure
     def is_falling(self, altitude):
         falling = True
         last = self.max_altitude
         for item in altitude:
             logging.debug(item)
-            if item >= last:
+            if item >= last - 50:
                 falling = False
             last = item
         return falling and len(altitude) == 6
