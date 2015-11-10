@@ -11,12 +11,7 @@ import logging
 class Camera(threading.Thread):
     def __init__(self, q_mode):
         self.q_mode = q_mode
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(7, GPIO.OUT)
-        GPIO.setup(11, GPIO.OUT)
-        GPIO.setup(13, GPIO.OUT)
-
-        GPIO.output(11, GPIO.HIGH)
+        # Servo Off
         GPIO.output(13, GPIO.LOW)
 
         self.pwm = GPIO.PWM(7, 50)
@@ -92,7 +87,6 @@ class Camera(threading.Thread):
                 t = t2 - t1
                 logging.debug("time: "+str(t))
 
-        GPIO.cleanup()
         logging.info("Stopping camera")
 
     def run_mode_1_online(self, i):

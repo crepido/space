@@ -127,6 +127,9 @@ class ComDevice(threading.Thread):
                 if self.mode == "MODE 1" and self.is_falling(altitude):
                     self.q_com_device_out.put("MODE 2")
 
+                # if self.mode == "MODE 2" and self.has_landed(altitude):
+                    # Check if landed
+
                 if self.mode == "MODE 1" or self.mode == "MODE 2":
                     self.send_gps_position(position)
 
