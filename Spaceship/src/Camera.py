@@ -152,10 +152,9 @@ class Camera(threading.Thread):
         time.sleep(0.5)
 
     def take_picture(self):
-        filename = str(time.time())+".jpg"
-
-        filename_low = "data/low-"+filename
-        filename_high = "data/high-"+filename
+        filename = str(time.time())
+        filename_low = "data/"+filename+"-low.jpg"
+        filename_high = "data/"+filename+"-high.jpg"
 
         logging.info("take_picture "+self.camera_position+", filename"+filename_low)
         os.system("raspistill -n -h 300 -w 533 -o "+filename_low)
@@ -166,7 +165,7 @@ class Camera(threading.Thread):
     def movie10s(self):
         logging.debug("10 sek movie "+self.camera_position)
         filename = str(time.time())+".h264"
-        os.system("raspivid -n -t 10000 -o "+filename)
+        os.system("raspivid -n -t 10000 -o data/"+filename)
 
     def send_picture(self, filename):
         logging.debug("send picture "+filename)
