@@ -39,11 +39,11 @@ class ComDevice(threading.Thread):
                 with open("data/send/"+item, "rb") as f:
                     data = f.read()
                     encoded = data.encode("base64")
-                    encoded2 = urllib.urlencode({"b": encoded})
+                    #encoded2 = urllib.urlencode({"b": encoded})
 
                 try:
                     if signal > 10:
-                        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/images?"+encoded2+"\"")
+                        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/images?"+encoded+"\"")
                         self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
                         self.sim.send_command("AT")
                         time.sleep(0.5)
