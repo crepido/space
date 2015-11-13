@@ -230,3 +230,13 @@ class Sim908:
         finally:
             pass
 
+     def get_signal_level2(self):
+        try:
+            res = self.send_command("AT+CSQ")
+            signal = int(res[1].split(":")[1].split(",")[0])
+            return signal
+        except (RuntimeError, IndexError, ValueError):
+            logging.error("Failed to get signal level")
+            return 0
+        finally:
+            pass
