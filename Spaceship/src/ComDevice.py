@@ -6,6 +6,7 @@ import Queue
 import os
 import subprocess
 import logging
+import urllib
 
 from sim908 import Sim908
 
@@ -32,7 +33,33 @@ class ComDevice(threading.Thread):
         if len(list) > 0:
             for item in list:
                 logging.info("Processing " + item)
+               
+                signal = self.sim.get_signal_level2()
+                
+                with open("data/send/"+item, "rb") as f:
+                    data = f.read()
+                    encoded = data.encode("base64")
+                    encoded2 = urllib.urlencode(encoded)
+
+                try:
+                    if signal > 10:
+                        self.sim.send_command("AT+HTTPPARA=\"URL\",\"http://spaceshiptracker.glenngbg.c9users.io/api/images?b="+encoded2+"\"")
+                        self.sim.send_command_contains("AT+HTTPACTION=1", ["+HTTPACTION:"])
+                        self.sim.send_command("AT")
+                        time.sleep(0.5)
+                        logging.info("Skickat bild")
+                    else:
+                        logging.debug("Signal is low, do not send images")
+                   
+                except RuntimeError:
+                    logging.exception("Failed to send commands.")
+                    self.sim.start_http()
+                finally:
+                    pass     
+                
                 os.remove("data/send/" + item)
+                
+                        
 
     def check_incoming_sms(self):
         try:
