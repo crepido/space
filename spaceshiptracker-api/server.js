@@ -8,6 +8,8 @@ var http = require('http').Server(app);
 
 var io = require('socket.io')(http);
 
+
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,7 +18,7 @@ app.use(bodyParser.json());
 // Must be used for cross domain ajaxs calls.
 // Adds access-control-allow-origin:*
 var corsOptions = {
-  origin: 'http://crepidoinspace-johancn87.c9users.io:8081',
+  origin: 'http://spaceshiptracker-glenngbg.c9users.io:8080',
   credentials : true
 };
 app.use(cors(corsOptions));
@@ -30,9 +32,13 @@ mongoose.connect(dburl | 'mongodb://mongo:27017/spacetracker');
 
 // Data schema for REST input and persistance
 var Position = require('./models/position');
+var Image = require('./models/image');
 
 
 var router = express.Router();   
+
+app.use(express.static(__dirname + '/wwwroot'));
+app.use('/js/cesium', express.static(__dirname + '/bower_components/cesium/Cesium'));
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
@@ -95,7 +101,41 @@ router.route('/positions/:shipname')
             res.json(positions);
         });
     });
+    
 
+router.route('/images')
+    // POST handler for storing of positions
+    .post(function(req, res) {
+        
+        var image = new Image();     
+        image.imageBytes = req.query.b; 
+      
+        image.timestamp = Date.now();
+
+        image.save(function(err) {
+            if (err)
+                res.send(err);
+            
+            
+            console.log("Image stored in db");
+            console.log("Broadcasting");
+            io.emit('NewImage', image);
+            
+            res.json({ message: 'Image stored!' });
+            
+            
+        });
+        
+    })
+    
+    .get(function(req, res) {
+        Image.find(function(err, images) {
+            if (err)
+                res.send(err);
+
+            res.json(images);
+        });
+    });
 
 
 
@@ -118,6 +158,8 @@ app.use('/api', router);
 var port = process.env.PORT || 8080;  
 
 
-http.listen(app.get('port'));
+http.listen(port);
+//app.listen(port);
+
 
 console.log('Server is started on port ' + port);
