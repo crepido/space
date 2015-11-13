@@ -230,7 +230,7 @@ class Sim908:
         finally:
             pass
 
-     def get_signal_level2(self):
+    def get_signal_level2(self):
         try:
             res = self.send_command("AT+CSQ")
             signal = int(res[1].split(":")[1].split(",")[0])
