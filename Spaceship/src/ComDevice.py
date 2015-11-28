@@ -29,6 +29,8 @@ class ComDevice(threading.Thread):
         self.sim.start_gps()
         self.sim.start_http()
 
+        self.names = {"+46733770119": "Tobias"}
+
     def send_images(self):
         list = os.listdir("data/send")
         if len(list) > 0:
@@ -66,6 +68,18 @@ class ComDevice(threading.Thread):
                 return False
         return True
 
+    def get_sender(self, sms):
+        sender = str(sms[0]).replace("\"", "")
+        name = ""
+        logging.info("msisdn: " + sender)
+        if sender == "+46733770119":
+            name = "Tobias"
+        if sender == "+46735581533":
+            name = "Fredrik"
+        if sender == "+46709200291":
+            name = "Lotta"
+        return name
+
     def check_incoming_sms(self):
         try:
             sms = self.sim.read_one_sms()
@@ -102,6 +116,23 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"CHEF"}):
                     self.sim.send_sms(sms[0], "Min chef är Lotta Sundqvist")
 
+                elif self.find_words(cmd, {"VEM", "JAG"}):
+                    name = self.get_sender(sms)
+
+                    if name != "":
+                        self.sim.send_sms(sms[0], "Du är "+name)
+                    else:
+                        self.sim.send_sms(sms[0], "Jag vet inte vem du är. Skicka ditt namn med sms: Jag heter Kalle")
+
+                elif self.find_words(cmd, {"JAG", "HETER"}):
+                    sender = str(sms[0])
+
+                    tmp = cmd
+                    name = tmp.replace("JAG HETER ").trim()
+                    self.name[sender] = name
+
+                    self.sim.send_sms(sms[0], "Hej "+name)
+
                 elif self.find_words(cmd, {"VARMT"}) or self.find_words(cmd, {"TEMPERATUR"}):
                     self.sim.send_sms(sms[0], "Just nu är det 21 grader i skeppet.")
 
@@ -109,18 +140,7 @@ class ComDevice(threading.Thread):
                     self.sim.send_sms(sms[0], "Våga säga nej. Sök alltid ett ja. Fastna aldrig i nja.")
 
                 elif self.find_words(cmd, {"HEJ"}):
-
-                    sender = str(sms[0]).replace("\"", "")
-                    name = ""
-
-                    logging.info("msisdn: "+sender)
-
-                    if sender == "+46733770119":
-                        name = "Tobias"
-                    if sender == "+46735581533":
-                        name = "Fredrik"
-                    if sender == "+46709200291":
-                        name = "Lotta"
+                    name = self.get_sender(sms)
 
                     if name != "":
                         self.sim.send_sms(sms[0], "Hej "+name+"!")
