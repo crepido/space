@@ -119,7 +119,7 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"CHEF"}):
                     self.sim.send_sms(sms[0], "Min chef är Lotta Sundqvist")
 
-                elif self.find_words(cmd, {"VEM", "JAG"}):
+                elif self.find_words(cmd, {"VEM", "JAG"}) or self.find_words(cmd, {"HETER", "JAG"}):
                     name = self.get_sender(sms)
 
                     if name != "":
@@ -148,7 +148,8 @@ class ComDevice(threading.Thread):
                     if name != "":
                         self.sim.send_sms(sms[0], "Hej "+name+"!")
                     else:
-                        self.sim.send_sms(sms[0], "Hej!")
+                        self.sim.send_sms(sms[0], "Hej! Jag vet inte vad du heter, skicka ditt namn "
+                                                  "med sms: Jag heter Kalle")
 
                 elif self.find_words(cmd, {"LOTTA"}):
                     self.sim.send_sms(sms[0], "Wow!")
