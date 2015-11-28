@@ -95,7 +95,7 @@ class ComDevice(threading.Thread):
 
                 elif self.find_words(cmd, {"HEJ"}):
 
-                    sender = str(sms[0])
+                    sender = str(sms[0]).replace("\"", "")
                     name = ""
 
                     if sender == "+46733770119":
