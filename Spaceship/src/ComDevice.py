@@ -1,4 +1,4 @@
-# coding=8859-1
+# coding=latin-1
 __author__ = 'tobias'
 
 import threading
@@ -90,12 +90,12 @@ class ComDevice(threading.Thread):
                 elif cmd == "SHUTDOWN":
                     os.system("shutdown -h now")
                     self.sim.send_sms(sms[0], "System shutdown initiated")
-                elif self.find_words(cmd, {"heter", "du"}):
+                elif self.find_words(cmd, {"HETER", "DU"}):
                     self.sim.send_sms(sms[0], "Jag heter CrepidoInSpace!")
 
                 elif self.find_words(cmd, {"HEJ"}):
 
-                    sender = sms[0]
+                    sender = str(sms[0])
                     name = ""
 
                     if sender == "+46733770119":
@@ -169,9 +169,11 @@ class ComDevice(threading.Thread):
         while self.running:
             self.check_incoming_queue()
 
+            if i % 2 == 0:
+                self.check_incoming_sms()
+
             # Each 10 sec
             if i % 10 == 0:
-                self.check_incoming_sms()
                 self.check_online()
                 position = self.sim.get_gps_position()
 
@@ -186,7 +188,7 @@ class ComDevice(threading.Thread):
                 if self.mode == "MODE 1" and self.is_falling(altitude):
                     self.q_com_device_out.put("MODE 2")
 
-                # if self.mode == "MODE 2" and self.has_landed(altitude):
+                    # if self.mode == "MODE 2" and self.has_landed(altitude):
                     # Check if landed
 
                 if self.mode == "MODE 1" or self.mode == "MODE 2":
@@ -196,8 +198,8 @@ class ComDevice(threading.Thread):
                 if self.mode == "MODE 3" and i == 0:
                     self.send_gps_position(position)
 
-                #if self.online:
-                #    self.send_images()
+                    #if self.online:
+                    #    self.send_images()
 
             time.sleep(1)
             i += 1
