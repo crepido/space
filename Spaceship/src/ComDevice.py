@@ -93,6 +93,20 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"HETER", "DU"}):
                     self.sim.send_sms(sms[0], "Jag heter CrepidoInSpace!")
 
+                elif self.find_words(cmd, {"VAR"}):
+                    position = self.sim.get_gps_position()
+                    msg = str(position.get_longitude()) + " " + str(position.get_latitude())
+                    self.sim.send_sms(sms[0], "Jag är i rymden. Min position är "+msg+". Min höjd är "+position.get_altitude() + " meter")
+
+                elif self.find_words(cmd, {"CHEF"}):
+                    self.sim.send_sms(sms[0], "Min chef är Lotta Sundqvist")
+
+                elif self.find_words(cmd, {"VARMT"}) or self.find_words(cmd, {"TEMPERATUR"}):
+                    self.sim.send_sms(sms[0], "Just nu är det 21 grader i skeppet.")
+
+                elif self.find_words(cmd, {"LEDORD"}) or self.find_words(cmd, {"Värdegrund"}):
+                    self.sim.send_sms(sms[0], "Våga säga nej. Sök alltid ett ja. Fastna aldrig i nja.")
+
                 elif self.find_words(cmd, {"HEJ"}):
 
                     sender = str(sms[0]).replace("\"", "")
