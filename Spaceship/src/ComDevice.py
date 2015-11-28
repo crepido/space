@@ -128,7 +128,7 @@ class ComDevice(threading.Thread):
                     sender = str(sms[0])
 
                     tmp = cmd
-                    name = tmp.replace("JAG HETER ", "").trim()
+                    name = tmp.replace("JAG HETER ", "").strip()
                     self.name[sender] = name
 
                     self.sim.send_sms(sms[0], "Hej "+name)
