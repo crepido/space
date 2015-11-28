@@ -1,3 +1,4 @@
+# coding=8859-1
 __author__ = 'tobias'
 
 import threading
@@ -58,8 +59,12 @@ class ComDevice(threading.Thread):
                     pass     
                 
                 os.remove("data/send/" + item)
-                
-                        
+
+    def find_words(self, cmd, expected_words):
+        for word in expected_words:
+            if cmd.find(word) == -1:
+                return False
+        return True
 
     def check_incoming_sms(self):
         try:
@@ -85,8 +90,34 @@ class ComDevice(threading.Thread):
                 elif cmd == "SHUTDOWN":
                     os.system("shutdown -h now")
                     self.sim.send_sms(sms[0], "System shutdown initiated")
+                elif self.find_words(cmd, {"heter", "du"}):
+                    self.sim.send_sms(sms[0], "Jag heter CrepidoInSpace!")
+
+                elif self.find_words(cmd, {"HEJ"}):
+
+                    sender = sms[0]
+                    name = ""
+
+                    if sender == "+46733770119":
+                        name = "Tobias"
+                    if sender == "+46735581533":
+                        name = "Fredrik"
+                    if sender == "+46709200291":
+                        name = "Lotta"
+
+                    if name == "":
+                        self.sim.send_sms(sms[0], "Hej "+name+"!")
+                    else:
+                        self.sim.send_sms(sms[0], "Hej!")
+
+                elif self.find_words(cmd, {"LOTTA"}):
+                    self.sim.send_sms(sms[0], "Wow!")
+
+                elif self.find_words(cmd, {"CREPIDO"}):
+                    self.sim.send_sms(sms[0], "Crepido är ett konsultbolag som tillför innovation och energi till våra "
+                                              "kunder.")
                 else:
-                    self.sim.send_sms(sms[0], "Error")
+                    self.sim.send_sms(sms[0], "Jag förstår inte.")
         except RuntimeError:
             logging.exception("Failed to read incoming sms or queue")
         finally:
@@ -165,8 +196,8 @@ class ComDevice(threading.Thread):
                 if self.mode == "MODE 3" and i == 0:
                     self.send_gps_position(position)
 
-                if self.online:
-                    self.send_images()
+                #if self.online:
+                #    self.send_images()
 
             time.sleep(1)
             i += 1

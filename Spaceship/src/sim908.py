@@ -1,3 +1,4 @@
+# coding=8859-1
 __author__ = 'tobias'
 
 import time
@@ -77,6 +78,7 @@ class Sim908:
             self.send_command("AT+CGPSPWR=1")
             self.send_command("AT+CGPSRST=1")
             self.send_command("AT")
+            self.send_command("AT+CSCS=\"8859-1\"")
             self.gps_init_count += 1
             if self.gps_init_count > 5:
                 self.gps_init_count = 0
@@ -163,7 +165,7 @@ class Sim908:
                 response = True
 
             i += 1
-            if i > 10:
+            if i > 50:
                 logging.error(ret)
                 raise RuntimeError("Expected result")
 
