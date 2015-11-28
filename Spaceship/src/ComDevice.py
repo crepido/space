@@ -98,6 +98,8 @@ class ComDevice(threading.Thread):
                     sender = str(sms[0]).replace("\"", "")
                     name = ""
 
+                    logging.info("msisdn: "+sender)
+
                     if sender == "+46733770119":
                         name = "Tobias"
                     if sender == "+46735581533":
@@ -105,7 +107,7 @@ class ComDevice(threading.Thread):
                     if sender == "+46709200291":
                         name = "Lotta"
 
-                    if name == "":
+                    if name != "":
                         self.sim.send_sms(sms[0], "Hej "+name+"!")
                     else:
                         self.sim.send_sms(sms[0], "Hej!")
