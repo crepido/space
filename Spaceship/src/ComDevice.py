@@ -29,7 +29,7 @@ class ComDevice(threading.Thread):
         self.sim.start_gps()
         self.sim.start_http()
 
-        self.names = {"+46733770119": "Tobias"}
+        self.names = {"+46733770119": "Tobias", "+46735581533": "Fredrik", "+46709200291": "Lotta"}
 
     def send_images(self):
         list = os.listdir("data/send")
@@ -70,15 +70,18 @@ class ComDevice(threading.Thread):
 
     def get_sender(self, sms):
         sender = str(sms[0]).replace("\"", "")
-        name = ""
+        # name = ""
         logging.info("msisdn: " + sender)
-        if sender == "+46733770119":
-            name = "Tobias"
-        if sender == "+46735581533":
-            name = "Fredrik"
-        if sender == "+46709200291":
-            name = "Lotta"
-        return name
+
+        return self.names.get(sender)
+
+        # if sender == "+46733770119":
+        #     name = "Tobias"
+        # if sender == "+46735581533":
+        #     name = "Fredrik"
+        # if sender == "+46709200291":
+        #     name = "Lotta"
+        # return name
 
     def check_incoming_sms(self):
         try:
@@ -129,7 +132,7 @@ class ComDevice(threading.Thread):
 
                     tmp = cmd
                     name = tmp.replace("JAG HETER ", "").strip()
-                    self.name[sender] = name
+                    self.names[sender] = name
 
                     self.sim.send_sms(sms[0], "Hej "+name)
 
