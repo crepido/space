@@ -96,7 +96,8 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"VAR"}):
                     position = self.sim.get_gps_position()
                     msg = str(position.get_longitude()) + " " + str(position.get_latitude())
-                    self.sim.send_sms(sms[0], "Jag är i rymden. Min position är "+msg+". Min höjd är "+position.get_altitude() + " meter")
+                    self.sim.send_sms(sms[0], "Jag är i rymden. Min position är "+msg+". Min höjd är "+
+                                      str(position.get_altitude()) + " meter")
 
                 elif self.find_words(cmd, {"CHEF"}):
                     self.sim.send_sms(sms[0], "Min chef är Lotta Sundqvist")
