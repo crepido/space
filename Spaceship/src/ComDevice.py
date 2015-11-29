@@ -145,7 +145,7 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"HEJ"}):
                     name = self.get_sender(sms)
 
-                    if name != "":
+                    if name != "" and name is not None:
                         self.sim.send_sms(sms[0], "Hej "+name+"!")
                     else:
                         self.sim.send_sms(sms[0], "Hej! Jag vet inte vad du heter, skicka ditt namn "
