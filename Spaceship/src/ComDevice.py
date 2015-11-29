@@ -8,6 +8,7 @@ import os
 import subprocess
 import logging
 import urllib
+import re
 
 from sim908 import Sim908
 
@@ -64,7 +65,7 @@ class ComDevice(threading.Thread):
 
     def find_words(self, cmd, expected_words):
         for word in expected_words:
-            if cmd.find(word) == -1:
+            if " " + word + " " not in cmd:
                 return False
         return True
 
