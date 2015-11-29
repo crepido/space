@@ -65,7 +65,7 @@ class ComDevice(threading.Thread):
 
     def find_words(self, cmd, expected_words):
         for word in expected_words:
-            if " " + word + " " not in cmd:
+            if word not in cmd:
                 return False
         return True
 
@@ -108,14 +108,9 @@ class ComDevice(threading.Thread):
                 elif cmd == "SHUTDOWN":
                     os.system("shutdown -h now")
                     self.sim.send_sms(sms[0], "System shutdown initiated")
+
                 elif self.find_words(cmd, {"HETER", "DU"}):
                     self.sim.send_sms(sms[0], "Jag heter CrepidoInSpace!")
-
-                elif self.find_words(cmd, {"VAR"}):
-                    position = self.sim.get_gps_position()
-                    msg = str(position.get_longitude()) + " " + str(position.get_latitude())
-                    self.sim.send_sms(sms[0], "Jag är i rymden. Min position är "+msg+". Min höjd är "+
-                                      str(position.get_altitude()) + " meter")
 
                 elif self.find_words(cmd, {"CHEF"}):
                     self.sim.send_sms(sms[0], "Min chef är Lotta Sundqvist")
@@ -140,7 +135,7 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"VARMT"}) or self.find_words(cmd, {"TEMPERATUR"}):
                     self.sim.send_sms(sms[0], "Just nu är det 21 grader i skeppet.")
 
-                elif self.find_words(cmd, {"LEDORD"}) or self.find_words(cmd, {"Värdegrund"}):
+                elif self.find_words(cmd, {"LEDORD"}) or self.find_words(cmd, {"VÄRDEGRUND"}):
                     self.sim.send_sms(sms[0], "Våga säga nej. Sök alltid ett ja. Fastna aldrig i nja.")
 
                 elif self.find_words(cmd, {"HEJ"}):
@@ -158,6 +153,13 @@ class ComDevice(threading.Thread):
                 elif self.find_words(cmd, {"CREPIDO"}):
                     self.sim.send_sms(sms[0], "Crepido är ett konsultbolag som tillför innovation och energi till våra "
                                               "kunder.")
+
+                elif self.find_words(cmd, {"VAR"}):
+                    position = self.sim.get_gps_position()
+                    msg = str(position.get_longitude()) + " " + str(position.get_latitude())
+                    self.sim.send_sms(sms[0], "Jag är i rymden. Min position är "+msg+". Min höjd är "+
+                                      str(position.get_altitude()) + " meter")
+
                 else:
                     self.sim.send_sms(sms[0], "Jag förstår inte.")
         except RuntimeError:
